@@ -1,0 +1,200 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/signin">
+      {{!-- <i class="fas fa-link"></i>  --}}
+      <img src="/img/logo_sigma.png" alt="Logo Fazt" height="50" width="185">
+    </a>
+    <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        
+       {{!--  {{#if user.ADMINISTRADOR}}
+
+          <li class="nav-item">
+           <a class="nav-link" href="/links/allogin">Usuários</a>
+          </li>  
+
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+          Cadastros
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/links/newuser">Cadastro Usuários</a>
+            <a class="dropdown-item" href="/links/newcont">Cadastro Contratos</a>            
+          </div>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>   
+        </li>
+          {{else}}   --}}
+
+          {{!-- inicio if admin sigmaone --}}
+          {{#if user.ADMINSGO}}
+          <li class="nav-item">
+            <a class="nav-link" href="/links/newuser">Cadastro</a>
+          </li>   
+        </li>
+
+        <li class="nav-item">
+           <a class="nav-link" href="/links/allogin">Usuários</a>
+          </li> 
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+          Vincular Usuários
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/links/revenda/newrevenda">Revendas</a>
+            <a class="dropdown-item" href="/links/clientes/newclient">Clientes</a>
+            <a class="dropdown-item" href="/links/revenda/rastreiorevenda">Rastreio</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/links/newcont">Abertura De OS</a>  
+          </div>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>   
+        </li
+           {{else}} 
+           {{!-- fim if admin sigmaone --}}
+
+           {{!-- inicio if CLIENTE --}}
+
+           {{#if user.CLIENTSGO2}}          
+          <li class="nav-item">
+           <a class="nav-link" href="/links/clientes/rastreio">Rastreio</a>
+          </li> 
+
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+          Minhas Compras
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {{!-- <a class="dropdown-item" href="/links/clientes/hitorico-boletos">Histórico De Boletos</a> --}}
+            <a class="dropdown-item" href="/links/clientes/boletos-abertos">Boletos Em Aberto</a>           
+            <a class="dropdown-item" href="/links/clientes/notafiscal-cliente">Notas Fiscais</a>
+          </div>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>   
+        </li>
+          
+           {{else}} 
+           {{!-- fim IFCLIENTE --}}
+
+           {{!-- inicio if REVENDA --}}
+          {{#if user.CLIENTSGO}}
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+          Ordem De Serviço
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/links">OS Abertas</a>
+            <a class="dropdown-item" href="/links/osclose">OS Fechadas</a>
+            <a class="dropdown-item" href="/links/all">Lista Geral</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/links/orderserv">Abertura De OS</a>
+          </div>
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+          Agenciamento
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/links/revenda/revenda">Aguardando Nota</a>
+            <a class="dropdown-item" href="/links/revenda/revendareceb">A Receber</a>
+            <a class="dropdown-item" href="/links/revenda/revendapg">Pagos</a>
+          </div>
+
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+          Minhas Compras
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {{!-- <a class="dropdown-item" href="/links/revenda/hitorico-boletos">Histórico De Boletos</a> --}}
+            <a class="dropdown-item" href="/links/revenda/boletos-abertos">Boletos Em Aberto</a>
+            <a class="dropdown-item" href="/links/revenda/notafiscal-revenda">Notas Fiscais</a>
+          </div>
+
+         <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+         Minhas Vendas
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {{!-- <a class="dropdown-item" href="/links/revenda/hitorico-boletos-clientes">Histórico De Boletos</a> --}}
+            <a class="dropdown-item" href="/links/revenda/boletos-abertos-clientes">Boletos Em Aberto</a>
+            <a class="dropdown-item" href="/links/revenda/notafiscal-cliente">Notas Fiscais</a>
+          </div>
+
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+         Serviços
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/links/revenda/listarastreio">Rastreio</a>
+            <a class="dropdown-item" href="/links/revenda/estoque">Estoque</a>
+          </div>
+
+          
+        <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>   
+        </li
+           {{else}} 
+           {{!-- fim if REVENDA --}}
+
+        {{#if user}}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+          Ordem De Serviço
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/links">OS Abertas</a>
+            <a class="dropdown-item" href="/links/osclose">OS Fechadas</a>
+            <a class="dropdown-item" href="/links/all">Lista Geral</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/links/orderserv">Abertura De OS</a>
+          </div>
+        </li>
+         <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+          Configurações
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/links">Dados Usuário</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/links/password">Alterar Senha</a>
+          </div>
+        </li> 
+
+         <li class="nav-item">
+          <a class="nav-link" href="/logout">Logout</a>
+        </li> 
+        
+        {{else}}
+        <li class="nav-item">
+          <a class="nav-link" href="/signin">Login</a>
+        </li>       
+        {{/if}}
+        {{/if}}
+        {{/if}}
+       {{!--  {{/if}} --}}
+        {{!-- fim total --}}
+        {{/if}}
+      </ul>
+    </div>
+  </div>
+</nav>
