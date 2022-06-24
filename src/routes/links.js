@@ -9,42 +9,43 @@ const DIR = './uploads';
 
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
-      callback(null, DIR);
+        callback(null, DIR);
     },
     filename: function (req, file, cb) {
-      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
 });
- 
-const upload = multer({storage: storage});
 
-
+const upload = multer({
+    storage: storage
+});
 
 const pool = require('../database');
-const { isLoggedIn } = require('../lib/auth');
+const {
+    isLoggedIn
+} = require('../lib/auth');
 
-router.get('/add', isLoggedIn, (req, res) => {    
-});
+router.get('/add', isLoggedIn, (req, res) => {});
 
 //FUNÇÕES REFERENTES AO PERFIL ADMIN SIGMAONE
 
 //ADICIONAR NOVO USUARIO, SOMENTE ADMIN
-router.get('/newuser', isLoggedIn, (req, res) => {    
+router.get('/newuser', isLoggedIn, (req, res) => {
     res.render('links/newuser')
 });
 
-router.post('/newuser', isLoggedIn, (req, res) => {    
+router.post('/newuser', isLoggedIn, (req, res) => {
     const nomeusu = req.body.nomeusu;
-    const senha = req.body.senha; 
+    const senha = req.body.senha;
 
     pool.query(`INSERT INTO sankhya.AD_TBLOGIN (NOMEUSU, SENHA, CLIENTSGO) VALUES('${nomeusu}','${senha}','S')`);
-    
+
     res.redirect('/links/allogin')
 });
 
 //ADICIONAR CONTRATOS AOS NOVOS USUÁRIOS, SOMENTE ADMIN
-router.get('/newcont', isLoggedIn, async (req, res) => {  
-    
+router.get('/newcont', isLoggedIn, async (req, res) => {
+
     const links = await pool.query(`SELECT 
     CODLOGIN,
     NOMEUSU,
@@ -57,7 +58,7 @@ router.get('/newcont', isLoggedIn, async (req, res) => {
     FROM sankhya.AD_TBLOGIN
     WHERE CLIENTSGO = 'S'
     AND CODLOGIN <> 836
-    ORDER BY NOMEUSU `); 
+    ORDER BY NOMEUSU `);
 
     //LISTAR CONTRATOS ATIVOS/ BONIFICADOS CDASTRADOS NA BASE
     const links2 = await pool.query(`SELECT DISTINCT 
@@ -70,25 +71,27 @@ router.get('/newcont', isLoggedIn, async (req, res) => {
         INNER JOIN sankhya.TGFCTT C ON (PAR.CODPARC=C.CODPARC)   
         WHERE CON.ATIVO = 'S'  
         AND CON.CODEMP=30
-        ORDER BY CON.NUMCONTRATO`); 
-   
-    res.render('links/newcont',{lista: links.recordset,cont: links2.recordset})
+        ORDER BY CON.NUMCONTRATO`);
+
+    res.render('links/newcont', {
+        lista: links.recordset,
+        cont: links2.recordset
+    })
 });
 
-
-router.post('/newcont', isLoggedIn, async (req, res) => {  
+router.post('/newcont', isLoggedIn, async (req, res) => {
 
     const contrato = req.body.numcontrat;
-    const login = req.body.login; 
+    const login = req.body.login;
 
     pool.query(`INSERT INTO sankhya.AD_TBACESSO (NUM_CONTRATO, ID_LOGIN) VALUES('${contrato}','${login}')`);
-    
+
     req.flash('success', 'O Contrato foi Vincunlado com Sucesso!!!!')
     res.redirect('/links/allogin')
 });
 
 //ADICIONAR CLIENTE
-router.get('/clientes/newclient', isLoggedIn, async (req, res) => {  
+router.get('/clientes/newclient', isLoggedIn, async (req, res) => {
 
     const links = await pool.query(`SELECT 
     CODLOGIN,
@@ -102,7 +105,7 @@ router.get('/clientes/newclient', isLoggedIn, async (req, res) => {
     FROM sankhya.AD_TBLOGIN
     WHERE CLIENTSGO = 'S'
     AND CODLOGIN <> 836 
-    ORDER BY NOMEUSU`); 
+    ORDER BY NOMEUSU`);
 
     //LISTAR DE PARCEIROS CADASTRADOS PARA EMPRESA 30
     const links2 = await pool.query(`SELECT DISTINCT 
@@ -111,26 +114,29 @@ router.get('/clientes/newclient', isLoggedIn, async (req, res) => {
         FROM  sankhya.TGFPAR PAR  
         LEFT JOIN sankhya.TGFCAB C ON (PAR.CODPARC = C.CODPARC)
         WHERE C.CODEMP = 30
-        ORDER BY PAR.CODPARC`); 
-   
-    res.render('links/clientes/newclient',{lista: links.recordset,cont: links2.recordset})
+        ORDER BY PAR.CODPARC`);
+
+    res.render('links/clientes/newclient', {
+        lista: links.recordset,
+        cont: links2.recordset
+    })
 });
 
-router.post('/clientes/newclient', isLoggedIn, async (req, res) => {  
+router.post('/clientes/newclient', isLoggedIn, async (req, res) => {
 
     const codparc = req.body.codparc;
-    const login = req.body.login; 
+    const login = req.body.login;
 
     pool.query(`UPDATE sankhya.AD_TBLOGIN SET CLIENTSGO2 = 1 WHERE CODLOGIN = '${login}'`);
 
     pool.query(`INSERT INTO sankhya.AD_CLIENTESGO (CODPARC,COD_LOGIN) VALUES('${codparc}','${login}')`);
-    
+
     req.flash('success', 'O Cliente foi Cadastrado com Sucesso!!!!')
     res.redirect('/links/allogin')
 });
 
 //ADICIONAR REVENDA
-router.get('/revenda/newrevenda', isLoggedIn, async (req, res) => {  
+router.get('/revenda/newrevenda', isLoggedIn, async (req, res) => {
 
     const links = await pool.query(`SELECT 
     CODLOGIN,
@@ -144,7 +150,7 @@ router.get('/revenda/newrevenda', isLoggedIn, async (req, res) => {
     FROM sankhya.AD_TBLOGIN
     WHERE CLIENTSGO = 'S'
     AND CODLOGIN <> 836 
-    ORDER BY NOMEUSU`); 
+    ORDER BY NOMEUSU`);
 
     //LISTAR DE PARCEIROS CADASTRADOS PARA EMPRESA 30
     const links2 = await pool.query(`SELECT DISTINCT 
@@ -153,26 +159,29 @@ router.get('/revenda/newrevenda', isLoggedIn, async (req, res) => {
         FROM  sankhya.TGFPAR PAR  
         LEFT JOIN sankhya.TGFCAB C ON (PAR.CODPARC = C.CODPARC)
         WHERE C.CODEMP = 30
-        ORDER BY PAR.CODPARC`); 
-   
-    res.render('links/revenda/newrevenda',{lista: links.recordset,cont: links2.recordset})
+        ORDER BY PAR.CODPARC`);
+
+    res.render('links/revenda/newrevenda', {
+        lista: links.recordset,
+        cont: links2.recordset
+    })
 });
 
-router.post('/revenda/newrevenda', isLoggedIn, async (req, res) => {  
+router.post('/revenda/newrevenda', isLoggedIn, async (req, res) => {
 
     const codparc = req.body.codparc;
-    const login = req.body.login; 
+    const login = req.body.login;
 
     pool.query(`UPDATE sankhya.AD_TBLOGIN SET REVENDA = 1 WHERE CODLOGIN = '${login}'`);
 
     pool.query(`INSERT INTO sankhya.AD_REVENDASGO (CODAGENCIADOR,COD_LOGIN) VALUES('${codparc}','${login}')`);
-    
+
     req.flash('success', 'A Revenda foi Cadastrada com Sucesso!!!!')
     res.redirect('/links/allogin')
 });
 
 //ADICIONAR RASTREIO REVENDA
-router.get('/revenda/rastreiorevenda', isLoggedIn, async (req, res) => {  
+router.get('/revenda/rastreiorevenda', isLoggedIn, async (req, res) => {
 
     const links = await pool.query(`SELECT 
     CODLOGIN,
@@ -186,7 +195,7 @@ router.get('/revenda/rastreiorevenda', isLoggedIn, async (req, res) => {
     FROM sankhya.AD_TBLOGIN
     WHERE CLIENTSGO = 'S'
     AND CODLOGIN <> 836 
-    ORDER BY NOMEUSU`); 
+    ORDER BY NOMEUSU`);
 
     //LISTAR DE PARCEIROS CADASTRADOS PARA EMPRESA 30
     const links2 = await pool.query(`SELECT DISTINCT 
@@ -195,30 +204,32 @@ router.get('/revenda/rastreiorevenda', isLoggedIn, async (req, res) => {
         FROM  sankhya.TGFPAR PAR  
         LEFT JOIN sankhya.TGFCAB C ON (PAR.CODPARC = C.CODPARC)
         WHERE C.CODEMP = 30
-        ORDER BY PAR.CODPARC`); 
-   
-    res.render('links/revenda/rastreiorevenda',{lista: links.recordset,cont: links2.recordset})
+        ORDER BY PAR.CODPARC`);
+
+    res.render('links/revenda/rastreiorevenda', {
+        lista: links.recordset,
+        cont: links2.recordset
+    })
 });
 
-router.post('/revenda/rastreiorevenda', isLoggedIn, async (req, res) => {  
+router.post('/revenda/rastreiorevenda', isLoggedIn, async (req, res) => {
 
     const codparc = req.body.codparc;
-    const login = req.body.login; 
+    const login = req.body.login;
 
     pool.query(`UPDATE sankhya.AD_TBLOGIN SET REVENDA = 1 WHERE CODLOGIN = '${login}'`);
 
     pool.query(`INSERT INTO sankhya.AD_RASTREIOREV (CODPARC,COD_LOGIN) VALUES('${codparc}','${login}')`);
 
     pool.query(`INSERT INTO sankhya.AD_BOLETOCLIENTE (CODPARC,COD_LOGIN) VALUES('${codparc}','${login}')`);
-    
+
     req.flash('success', 'Rastreio Vinculado com Sucesso!!!!')
     res.redirect('/links/allogin')
 });
 
-
 //ADD OS
 router.get('/orderserv', isLoggedIn, async (req, res) => {
-    const idlogin = req.user.CODLOGIN  
+    const idlogin = req.user.CODLOGIN
 
     //contrato
     const links = await pool.query(`SELECT DISTINCT L.NUM_CONTRATO, PAR.NOMEPARC,CON.AD_LOCALIDADE,
@@ -248,8 +259,8 @@ router.get('/orderserv', isLoggedIn, async (req, res) => {
     AND PS.SITPROD IN ('A','B')
     AND PD.USOPROD IN ('S', 'R')
     AND TC.PRIORIDADE IS NULL
-    ORDER BY CON.AD_CIRCUITO`);     
-    
+    ORDER BY CON.AD_CIRCUITO`);
+
     //contatos
     const links2 = await pool.query(`SELECT DISTINCT 
     UPPER  (CONVERT(VARCHAR(30),c.NOMECONTATO,103))+' - '+CONVERT(VARCHAR(30),con.NUMCONTRATO,103)+' -'+
@@ -304,23 +315,31 @@ router.get('/orderserv', isLoggedIn, async (req, res) => {
     AND PD.USOPROD='R'
     order by PRODUTO`);
 
-    res.render('links/testes', {geral: links.recordset, cont: links2.recordset, prod: links3.recordset, prod1: links4.recordset})
+    res.render('links/testes', {
+        geral: links.recordset,
+        cont: links2.recordset,
+        prod: links3.recordset,
+        prod1: links4.recordset
+    })
 });
 
-router.post('/orderserv', isLoggedIn, upload.single('file'), async (req, res) => {    
+router.post('/orderserv', isLoggedIn, upload.single('file'), async (req, res) => {
 
-    const links = await pool.query('select top (1) NUMOS +1 as NUMOS from sankhya.TCSOSE order by numos desc');  
-    const numos = Object.values(links.recordset[0])    
+    const links = await pool.query('select top (1) NUMOS +1 as NUMOS from sankhya.TCSOSE order by numos desc');
+    const numos = Object.values(links.recordset[0])
 
     const texto = req.body.texto;
     const filetoupload = upload
-    const contrato = req.body.contrato; 
+    const contrato = req.body.contrato;
     const parceiro = req.body.codparc;
-    const produto = req.body.codprod; 
-    const servico = req.body.codserv; 
-    const contato = req.body.atualiza; 
+    const produto = req.body.codprod;
+    const servico = req.body.codserv;
+    const contato = req.body.atualiza;
     //const slccont = req.body.sla;
     const cart = req.body.carteira;
+
+    const t1 = texto
+    const textofin = t1.replace("'", "`");
 
     //verificação cód prioridade sla
     const links2 = await pool.query(`SELECT DISTINCT 
@@ -599,35 +618,25 @@ router.post('/orderserv', isLoggedIn, upload.single('file'), async (req, res) =>
     AND CH.SAIDA IS NOT NULL
 `);
     //const prioridade = Object.values(links2.recordset[0]) 
-	const prioridade = 1440 
-
-    /* console.log('prioridade')
-    console.log(prioridade)
-
-    console.log('CONTRATO')
-    console.log(contrato)
-
-    console.log('servico')
-    console.log(produto) */
-
+    const prioridade = 1440
 
     await pool.query(`INSERT INTO sankhya.TCSOSE (NUMOS,NUMCONTRATO,DHCHAMADA,DTPREVISTA,CODPARC,CODCONTATO,CODATEND,CODUSURESP,DESCRICAO,SITUACAO,CODCOS,CODCENCUS,CODOAT,POSSUISLA) VALUES 
-    ('${numos}','${contrato}',GETDATE(),(SELECT DATEADD(MI,${prioridade},GETDATE())),'${parceiro}','${contato}',110,110,'${texto}','P','',30101,1000000,'S');
+    ('${numos}','${contrato}',GETDATE(),(SELECT DATEADD(MI,${prioridade},GETDATE())),'${parceiro}','${contato}',110,110,'${textofin}','P','',30101,1000000,'S');
     INSERT INTO SANKHYA.TCSITE (NUMOS,NUMITEM,CODSERV,CODPROD,CODUSU,CODOCOROS,CODUSUREM,DHENTRADA,DHPREVISTA,CODSIT,COBRAR,RETRABALHO) VALUES 
     ('${numos}',1,'${produto}','${servico}',1245,'${cart}',110,GETDATE(),(SELECT DATEADD(MI,${prioridade},GETDATE())),15,'N','N');
     INSERT INTO sankhya.TSIATA (CODATA,DESCRICAO,ARQUIVO,CONTEUDO,CODUSU,DTALTER,TIPO) VALUES ('${numos}','ANEXO','${filetoupload}','${filetoupload}',1006,GETDATE(),'W')
-`); 
-    
+`);
+
     req.flash('success', 'Ordem De Serviço Criada com Sucesso!!!!')
     res.redirect('/links')
-    
+
 });
 //FIM ATIVIDADES ADMIM SIGMONE
 
 //PAGINAS DATATABLES 
 //LISTAR TODAS AS OS ABERTAS
-router.get('/', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT 
     C.NUMCONTRATO, 
     P.NOMEPARC,    
@@ -665,12 +674,14 @@ router.get('/', isLoggedIn,  async (req, res) => {
     AND I.NUMITEM = (SELECT MAX(NUMITEM) FROM SANKHYA.TCSITE WHERE NUMOS = O.NUMOS AND TERMEXEC IS NULL)
     AND O.DHCHAMADA >= '01/01/2021'
     AND AC.ID_LOGIN= ${idlogin}`);
-    res.render('links/list', { lista: links.recordset });
+    res.render('links/list', {
+        lista: links.recordset
+    });
 });
 
 //LISTAR TODAS AS OS FECHADAS
-router.get('/osclose', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/osclose', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT 
     C.NUMCONTRATO, 
     P.NOMEPARC,    
@@ -714,12 +725,14 @@ router.get('/osclose', isLoggedIn,  async (req, res) => {
     AND I.TERMEXEC = (SELECT DISTINCT MAX (TERMEXEC) FROM SANKHYA.TCSITE WHERE NUMOS = O.NUMOS)
     AND O.DHCHAMADA >= DATEADD(DAY, -60, GETDATE())
     AND AC.ID_LOGIN= ${idlogin}`);
-    res.render('links/osclose', { lista: links.recordset });
+    res.render('links/osclose', {
+        lista: links.recordset
+    });
 });
 
 //listar todas as OS registradas para o parceiro
-router.get('/all', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/all', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT 
     C.NUMCONTRATO, 
     P.NOMEPARC,    
@@ -767,13 +780,15 @@ router.get('/all', isLoggedIn,  async (req, res) => {
     AND I.NUMITEM = (SELECT DISTINCT MAX (NUMITEM) FROM SANKHYA.TCSITE WHERE NUMOS = O.NUMOS)
     AND O.DHCHAMADA >= DATEADD(DAY, -60, GETDATE())
     AND AC.ID_LOGIN= ${idlogin}`);
-    res.render('links/all', { lista: links.recordset });
+    res.render('links/all', {
+        lista: links.recordset
+    });
 });
 
 //LISTAGEM REFERENTE AO AGENCIAMENTO 
 //LISTA APENAS QUANDO OS USUÁRIOS LOGADOS FOREM REVENDAS SIGMAONE (RECEBIDOS)
-router.get('/revenda/revenda', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/revenda/revenda', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT
     DISTINCT
     CAB.NUNOTA AS NR_UNICO,
@@ -812,12 +827,14 @@ router.get('/revenda/revenda', isLoggedIn,  async (req, res) => {
     AND CAB.CODMOTORISTA <> 0
     AND (FIN.AD_AGENPAGO IS NULL OR FIN.AD_AGENPAGO = 'N')
     AND L.CODLOGIN =  ${idlogin}`);
-    res.render('links/revenda/revenda', { lista: links.recordset });
+    res.render('links/revenda/revenda', {
+        lista: links.recordset
+    });
 });
 
 //LISTA APENAS QUANDO OS USUÁRIOS LOGADOS FOREM REVENDAS SIGMAONE (A RECEBER)
-router.get('/revenda/revendareceb', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/revenda/revendareceb', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT
     DISTINCT
     CAB.NUNOTA AS NR_UNICO,
@@ -855,12 +872,14 @@ router.get('/revenda/revendareceb', isLoggedIn,  async (req, res) => {
     AND CAB.CODMOTORISTA <> 0
     AND (FIN.AD_AGENPAGO IS NULL OR FIN.AD_AGENPAGO = 'N')
     AND L.CODLOGIN = ${idlogin}`);
-    res.render('links/revenda/revendareceb', { lista: links.recordset });
+    res.render('links/revenda/revendareceb', {
+        lista: links.recordset
+    });
 });
 
 //LISTA APENAS QUANDO OS USUÁRIOS LOGADOS FOREM REVENDAS SIGMAONE (A RECEBER)
-router.get('/revenda/revendapg', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/revenda/revendapg', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT
     DISTINCT
     CAB.NUNOTA AS NR_UNICO,
@@ -897,13 +916,15 @@ router.get('/revenda/revendapg', isLoggedIn,  async (req, res) => {
     AND CAB.CODMOTORISTA <> 0
     AND FIN.AD_AGENPAGO = 'S'
     AND L.CODLOGIN = ${idlogin}`);
-    res.render('links/revenda/revendapg', { lista: links.recordset });
+    res.render('links/revenda/revendapg', {
+        lista: links.recordset
+    });
 });
 
 //LISTA RASTREIO 
 //LISTA RASTREIO CLIENTES SIGMAONE
-router.get('/clientes/rastreio', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/clientes/rastreio', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT  
     NUREGISTRO,
     CTE,
@@ -920,12 +941,14 @@ router.get('/clientes/rastreio', isLoggedIn,  async (req, res) => {
     AND CL.COD_LOGIN = ${idlogin}
     GROUP BY NUREGISTRO, F.CTE,F.NFSAIDA,CAST(LINKRASTREIO AS NVARCHAR(100)), CAB.CODPARC
     ORDER BY NFSAIDA`);
-    res.render('links/clientes/rastreio', { lista: links.recordset });
+    res.render('links/clientes/rastreio', {
+        lista: links.recordset
+    });
 });
 
 //LISTA RASTREIO REVENDAS SIGMAONE
-router.get('/revenda/listarastreio', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/revenda/listarastreio', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT   
     NUREGISTRO,
     CTE,
@@ -944,39 +967,14 @@ router.get('/revenda/listarastreio', isLoggedIn,  async (req, res) => {
     AND CAB.CODMOTORISTA  =RV.CODAGENCIADOR
     AND RV.COD_LOGIN = ${idlogin}    
     ORDER BY PAR.NOMEPARC`);
-    res.render('links/revenda/listarastreio', { lista: links.recordset });
+    res.render('links/revenda/listarastreio', {
+        lista: links.recordset
+    });
 });
 
-//FINANCEIRO GERAL CLIENTE
-//HISTÓRICO BOLETO CLIENTES SIGMAONE
-/* router.get('/clientes/hitorico-boletos', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
-    const links = await pool.query(`SELECT 
-    F.NUNOTA,
-    F.DTNEG,
-    F.DESDOBRAMENTO,
-    F.DTVENC,
-    CONVERT(VARCHAR(30), F.DHBAIXA, 103) AS DHBAIXA,
-    F.NOSSONUM,
-    F.LINHADIGITAVEL,
-    F.VLRBAIXA
-    FROM sankhya.TGFFIN F
-    LEFT JOIN sankhya.TGFCAB C ON (C.NUNOTA=F.NUNOTA)
-    LEFT JOIN sankhya.TGFPAR P ON (P.CODPARC=C.CODPARC)
-    INNER JOIN sankhya.AD_CLIENTESGO CS ON (P.CODPARC=CS.CODPARC)
-    WHERE F.CODEMP = 30 
-    AND NOSSONUM IS NOT NULL
-    AND LINHADIGITAVEL IS NOT NULL
-    AND CS.COD_LOGIN=${idlogin}
-    AND DHBAIXA IS NOT NULL
-    AND RECDESP = 1
-    ORDER BY NUNOTA,DESDOBRAMENTO,DTVENC,DHBAIXA`);
-    res.render('links/clientes/hitorico-boletos', { lista: links.recordset });
-}); */
-
 //BOLETO EM ABERTO CLIENTES SIGMAONE
-router.get('/clientes/boletos-abertos', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/clientes/boletos-abertos', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT 
     F.NUNOTA AS N_UNICO,
     C.NUMNOTA AS NUNOTA,
@@ -998,16 +996,18 @@ router.get('/clientes/boletos-abertos', isLoggedIn,  async (req, res) => {
     AND DHBAIXA IS NULL
     AND RECDESP = 1
     ORDER BY F.DTVENC,NUNOTA,DESDOBRAMENTO,DHBAIXA`);
-    res.render('links/clientes/boletos-abertos', { lista: links.recordset });
+    res.render('links/clientes/boletos-abertos', {
+        lista: links.recordset
+    });
 });
 
 //NOTA FISCAL CLIENTES SIGMAONE
-router.get('/clientes/notafiscal-cliente', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/clientes/notafiscal-cliente', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT C.NUMNOTA,
     CONVERT(VARCHAR(30), C.DTNEG, 103) AS DTNEG,    
     C.CODVEND,
-    V.APELIDO AS VENDEDOR,
+    V.APELIDO AS VENDEDOR
     FORMAT(C.VLRNOTA, 'C', 'pt-br') AS VLRNOTA     
         FROM  sankhya.TGFCAB C
         INNER JOIN sankhya.TGFVEN V ON (C.CODVEND=V.CODVEND)
@@ -1019,40 +1019,14 @@ router.get('/clientes/notafiscal-cliente', isLoggedIn,  async (req, res) => {
         AND C.STATUSNOTA = 'L'
         AND C.TIPMOV = 'V'
         ORDER BY C.DTNEG`);
-    res.render('links/clientes/notafiscal-cliente', { lista: links.recordset });
+    res.render('links/clientes/notafiscal-cliente', {
+        lista: links.recordset
+    });
 });
 
-//FINANEIRO GERAL REVENDA
-//HISTÓRICO BOLETO REVENDAS SIGMAONE (MINHAS NOTAS)
-/* router.get('/revenda/hitorico-boletos', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
-    const links = await pool.query(`SELECT 
-    F.NUNOTA,
-    F.DTNEG,
-    F.DESDOBRAMENTO,
-    F.DTVENC,
-    CONVERT(VARCHAR(30), F.DHBAIXA, 103) AS DHBAIXA,
-    F.NOSSONUM,
-    F.LINHADIGITAVEL,
-    F.VLRBAIXA
-    FROM sankhya.TGFFIN F
-    LEFT JOIN sankhya.TGFCAB C ON (C.NUNOTA=F.NUNOTA)
-    LEFT JOIN sankhya.TGFPAR P ON (P.CODPARC=C.CODPARC)
-    INNER JOIN sankhya.AD_REVENDASGO RV ON (C.CODMOTORISTA=RV.CODAGENCIADOR)
-    WHERE F.CODEMP = 30 
-    AND NOSSONUM IS NOT NULL
-    AND LINHADIGITAVEL IS NOT NULL
-    AND RV.COD_LOGIN=${idlogin}
-    AND DHBAIXA IS NOT NULL
-    AND RECDESP = 1
-    AND P.CLASSIFICMS = 'R'
-    ORDER BY NUNOTA,DESDOBRAMENTO,DTVENC,DHBAIXA`);
-    res.render('links/revenda/hitorico-boletos', { lista: links.recordset });
-}); */
-
 //BOLETO EM ABERTO REVENDAS SIGMAONE (MINHAS NOTAS)
-router.get('/revenda/boletos-abertos', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/revenda/boletos-abertos', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT 
     F.NUNOTA AS N_UNICO,
     C.NUMNOTA AS NUNOTA,
@@ -1074,59 +1048,44 @@ router.get('/revenda/boletos-abertos', isLoggedIn,  async (req, res) => {
     AND DHBAIXA IS NULL
     AND RECDESP = 1
     ORDER BY F.DTVENC,NUNOTA,DESDOBRAMENTO,DHBAIXA`);
-    res.render('links/revenda/boletos-abertos', { lista: links.recordset });
+    res.render('links/revenda/boletos-abertos', {
+        lista: links.recordset
+    });
 });
 
 //NOTA FISCAL REVENDAS SIGMAONE
-router.get('/revenda/notafiscal-revenda', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
-    const links = await pool.query(`SELECT C.NUMNOTA,
-    CONVERT(VARCHAR(30), C.DTNEG, 103) AS DTNEG,    
-    C.CODVEND,
-    V.APELIDO AS VENDEDOR,
-    FORMAT(C.VLRNOTA, 'C', 'pt-br') AS VLRNOTA 
-FROM sankhya.TGFCAB C
-INNER JOIN sankhya.TGFVEN V ON (C.CODVEND=V.CODVEND)
-LEFT JOIN sankhya.TGFPAR P ON (P.CODPARC=C.CODPARC)
-INNER JOIN sankhya.AD_REVENDASGO RV ON (RV.CODAGENCIADOR=C.CODPARC)
+router.get('/revenda/notafiscal-revenda', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
+    const links = await pool.query(`SELECT DISTINCT
+    C.NUMNOTA,
+        C.NUNOTA,
+        CONVERT(VARCHAR(30), C.DTNEG, 103) AS DTNEG,    
+        C.CODVEND,
+        V.APELIDO AS VENDEDOR,
+        FORMAT(C.VLRNOTA, 'C', 'pt-br') AS VLRNOTA  
+    FROM sankhya.TGFCAB C
+    INNER JOIN sankhya.TGFVEN V ON (C.CODVEND=V.CODVEND)
+    LEFT JOIN sankhya.TGFPAR P ON (P.CODPARC=C.CODPARC)
+    INNER JOIN sankhya.AD_REVENDASGO RV ON (RV.CODAGENCIADOR=C.CODPARC)
+    INNER JOIN sankhya.TGFITE I  ON (C.NUNOTA = I.NUNOTA)
+    INNER JOIN SANKHYA.TSIEMP EMP ON (EMP.CODEMP = C.CODEMP)
+    INNER JOIN SANKHYA.TGFPRO PRO ON (I.CODPROD = PRO.CODPROD)
+    INNER JOIN SANKHYA.TGFEMP FEMP ON (C.CODEMP = FEMP.CODEMP)
+    LEFT JOIN SANKHYA.TGFIPI IPI ON (IPI.CODIPI = PRO.CODIPI)
 WHERE RV.COD_LOGIN = ${idlogin}
 AND C.VLRNOTA IS NOT NULL
 AND C.CODEMP = 30
 AND C.STATUSNOTA = 'L'
 AND C.TIPMOV = 'V'
-ORDER BY C.DTNEG`);
-    res.render('links/revenda/notafiscal-revenda', { lista: links.recordset });
+ORDER BY C.NUNOTA`);
+    res.render('links/revenda/notafiscal-revenda', {
+        lista: links.recordset
+    });
 });
 
-//HISTÓRICO BOLETO CLIENTES SIGMAONE (VISÃO REVENDA)
-/* router.get('/revenda/hitorico-boletos-clientes', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
-    const links = await pool.query(`SELECT 
-    F.NUNOTA,
-    F.DTNEG,
-    F.DESDOBRAMENTO,
-    F.DTVENC,
-    CONVERT(VARCHAR(30), F.DHBAIXA, 103) AS DHBAIXA,
-    F.NOSSONUM,
-    F.LINHADIGITAVEL,
-    F.VLRBAIXA
-    FROM sankhya.TGFFIN F
-    LEFT JOIN sankhya.TGFCAB C ON (C.NUNOTA=F.NUNOTA)
-    LEFT JOIN sankhya.TGFPAR P ON (P.CODPARC=C.CODPARC)
-    INNER JOIN sankhya.AD_BOLETOCLIENTE CBL ON (P.CODPARC=CBL.CODPARC)
-    WHERE F.CODEMP = 30 
-    AND NOSSONUM IS NOT NULL
-    AND LINHADIGITAVEL IS NOT NULL
-    AND CBL.COD_LOGIN=${idlogin}
-    AND DHBAIXA IS NOT NULL
-    AND RECDESP = 1
-    ORDER BY NUNOTA,DESDOBRAMENTO,DTVENC,DHBAIXA`);
-    res.render('links/revenda/hitorico-boletos-clientes', { lista: links.recordset });
-}); */
-
 //BOLETO EM ABERTO CLIENTES SIGMAONE (VISÃO REVENDA)
-router.get('/revenda/boletos-abertos-clientes', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/revenda/boletos-abertos-clientes', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT 
     F.NUNOTA AS N_UNICO,
     C.NUMNOTA AS NUNOTA,
@@ -1150,12 +1109,14 @@ router.get('/revenda/boletos-abertos-clientes', isLoggedIn,  async (req, res) =>
     AND DHBAIXA IS NULL
     AND RECDESP = 1
     ORDER BY F.DTVENC,P.NOMEPARC,NUNOTA,DESDOBRAMENTO,DHBAIXA`);
-    res.render('links/revenda/boletos-abertos-clientes', { lista: links.recordset });
+    res.render('links/revenda/boletos-abertos-clientes', {
+        lista: links.recordset
+    });
 });
 
 //NOTA FISCAL CLIENTE (VISÃO REVENDA)
-router.get('/revenda/notafiscal-cliente', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/revenda/notafiscal-cliente', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT C.NUNOTA,
     C.NUMNOTA,
         CONVERT(VARCHAR(30), C.DTNEG, 103) AS DTNEG,
@@ -1169,43 +1130,640 @@ router.get('/revenda/notafiscal-cliente', isLoggedIn,  async (req, res) => {
     LEFT JOIN sankhya.TGFPAR P ON (P.CODPARC=C.CODPARC)
     LEFT JOIN sankhya.AD_REVENDASGO RV ON (C.CODMOTORISTA=RV.CODAGENCIADOR)
     WHERE C.CODMOTORISTA =RV.CODAGENCIADOR
-    AND RV.COD_LOGIN = ${idlogin}
+    AND RV.COD_LOGIN = ${idlogin}    
     AND C.CODEMP = 30
     AND C.STATUSNOTA = 'L'
     AND C.TIPMOV = 'V'
-    ORDER BY P.NOMEPARC,C.DTNEG`);
-    res.render('links/revenda/notafiscal-cliente', { lista: links.recordset });
+    ORDER BY C.DTNEG DESC`);
+    res.render('links/revenda/notafiscal-cliente', {
+        lista: links.recordset
+    });
 });
 
-//NOTA FISCAL CLIENTE (VISÃO REVENDA) teste
-router.get('/revenda/nf_cliente', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
-    const links = await pool.query(`SELECT 
-    F.NUNOTA,
-    F.DTNEG,
-    F.DESDOBRAMENTO,
-    CONVERT(VARCHAR(30), F.DTVENC, 103) AS DTVENC, 
-    F.NOSSONUM,
-    F.LINHADIGITAVEL,    
-    F.VLRDESDOB 
-    FROM sankhya.TGFFIN F
-    LEFT JOIN sankhya.TGFCAB C ON (C.NUNOTA=F.NUNOTA)
+//impressão nota fical revenda
+router.get('/revenda/nf/:texto?', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
+    const nunota = req.body.texto;
+    const params = req.params.texto;
+    const sla = params
+
+    //nota item
+    const links = await pool.query(`SELECT DISTINCT
+    C.NUMNOTA,
+        C.NUNOTA,
+        CONVERT(VARCHAR(30), C.DTNEG, 103) AS DTNEG,    
+        C.CODVEND,
+        V.APELIDO AS VENDEDOR,
+         FORMAT(C.VLRNOTA, 'N2') AS VLRNOTA, 
+    CASE
+            WHEN (RTRIM(I.PRODUTONFE) IS NOT NULL ) THEN I.PRODUTONFE
+          WHEN ( (RTRIM(I.PRODUTONFE) IS NULL) AND
+                 ('S' = (SELECT LOGICO FROM SANKHYA.TSIPAR WHERE CHAVE = 'HAUNI' AND CODUSU = 0)) AND
+             ((PRO.REFERENCIA) IS NULL)
+            ) THEN CAST(PRO.CODPROD AS VARCHAR)
+              WHEN ( (RTRIM(I.PRODUTONFE) IS NULL) AND
+                ('S' = (SELECT LOGICO FROM SANKHYA.TSIPAR WHERE CHAVE = 'HAUNI' AND CODUSU = 0)) AND
+             ((PRO.REFERENCIA) IS NOT NULL)
+            ) THEN PRO.REFERENCIA
+          WHEN ( (RTRIM(I.PRODUTONFE) IS NULL) AND ('N' = (SELECT LOGICO FROM SANKHYA.TSIPAR WHERE CHAVE = 'HAUNI' AND CODUSU = 0))) THEN CAST(I.CODPROD AS VARCHAR)
+              WHEN ( ( (SELECT LOGICO FROM SANKHYA.TSIPAR WHERE CHAVE = 'HAUNI' AND CODUSU = 0) IS NULL)) THEN CAST(PRO.CODPROD AS VARCHAR)
+        END AS CODPROD,
+    PRO.DESCRPROD,
+    CASE
+            WHEN (RTRIM(PRO.NCM) IS NOT NULL ) THEN PRO.NCM
+          ELSE IPI.CODFISIPI
+        END AS 	CODFISIPI,
+    pro.origprod , 
+    CASE WHEN ((EMP.SIMPLES = 'S') AND (I.CODTRIB <> 30 AND I.CODTRIB <> 60)) THEN I.CSOSN
+             ELSE I.CODTRIB
+        END AS CODTRIB,
+    I.CODCFO,
+    I.CODVOL,
+    FORMAT(I.QTDNEG, 'N2') AS QTDNEG,   
+    FEMP.VLRLIQITEMNFE,
+    FORMAT(I.VLRUNIT, 'N2') AS VLRUNIT,
+    FORMAT((I.VLRDESC + I.VLRREPRED), 'N2') AS VLRDESC,
+    FORMAT(I.PERCDESC, 'N2') AS PERCDESC,
+    FORMAT(I.VLRTOT, 'N2') AS VLRTOT,
+    FORMAT(I.BASEICMS, 'N2') AS BASEICMS,
+    FORMAT(I.VLRICMS, 'N2') AS VLRICMS,
+    FORMAT(I.VLRIPI, 'N2') AS VLRIPI,
+    FORMAT(I.ALIQICMS, 'N2') AS ALIQICMS,   
+    FORMAT(I.ALIQIPI, 'N2') AS ALIQIPI,    
+    FORMAT(C.VLRFRETE, 'N2') AS VLR_FRETE,
+    FORMAT(c.VLRSEG, 'N2') AS VLR_SEGURO,
+    FORMAT(I.VLRSUBST, 'N2') AS VLR_ST
+     
+    --------- 
+    FROM sankhya.TGFCAB C
+    LEFT JOIN SANKHYA.TGFPAR PTR ON (C.CODPARCTRANSP=PTR.CODPARC)
+    INNER JOIN sankhya.TGFVEN V ON (C.CODVEND=V.CODVEND)
     LEFT JOIN sankhya.TGFPAR P ON (P.CODPARC=C.CODPARC)
-    INNER JOIN sankhya.AD_BOLETOCLIENTE CBL ON (P.CODPARC=CBL.CODPARC)
-    WHERE F.CODEMP = 30 
-    AND NOSSONUM IS NOT NULL
-    AND LINHADIGITAVEL IS NOT NULL
-    AND CBL.COD_LOGIN=${idlogin}
-    AND F.NUNOTA=956818
-    AND DHBAIXA IS NULL
-    AND f.DESDOBRAMENTO =3
-    AND RECDESP = 1
-    ORDER BY NUNOTA,DESDOBRAMENTO,DTVENC,DHBAIXA`);
-    res.render('links/revenda/nf_cliente', { lista: links.recordset });
+    INNER JOIN sankhya.AD_REVENDASGO RV ON (RV.CODAGENCIADOR=C.CODPARC)
+     INNER JOIN sankhya.TGFITE I  ON (C.NUNOTA = I.NUNOTA)
+    INNER JOIN SANKHYA.TSIEMP EMP ON (EMP.CODEMP = C.CODEMP)
+    INNER JOIN SANKHYA.TGFPRO PRO ON (I.CODPROD = PRO.CODPROD)
+    INNER JOIN SANKHYA.TGFEMP FEMP ON (C.CODEMP = FEMP.CODEMP)
+    LEFT JOIN SANKHYA.TGFIPI IPI ON (IPI.CODIPI = PRO.CODIPI)
+    WHERE RV.COD_LOGIN =${idlogin}
+    AND C.NUNOTA =${sla}
+    AND C.VLRNOTA IS NOT NULL
+    AND C.CODEMP = 30
+    AND C.STATUSNOTA = 'L'
+    AND C.TIPMOV = 'V'
+    ORDER BY C.NUNOTA`);
+
+    //cabeçalho nota
+    const links2 = await pool.query(`SELECT
+    DISTINCT
+        --cabeçalho
+        C.NUMNOTA,
+        C.SERIENOTA,
+        C.CHAVENFE,
+        CASE WHEN TPO.ATUALLIVFIS = 'S' THEN 1 ELSE 2 END AS ATUALLIVFIS ,
+        CASE
+            WHEN C.AD_VALIDPROP IS NULL THEN 10
+            ELSE C.AD_VALIDPROP
+        END AS AD_VALIDPROP,
+        C.NUNOTA AS PROPOSTA,
+        C.DTNEG AS DATA_PROPOSTA,
+        
+        --ENDEREÇO EMPRESA
+        EMP.RAZAOSOCIAL AS RZ_EMP,
+        EMP.CGC AS CGC_EMP,
+        UPPER (TSIE.TIPO) AS TIPO_EMP,
+        UPPER (TSIE.NOMEEND) AS END_EMP,
+        CASE
+            WHEN EMP.NUMEND IS NULL THEN ''
+            ELSE UPPER (EMP.NUMEND)
+        END AS NUM_EMP,
+        CASE
+            WHEN EMP.COMPLEMENTO IS NULL THEN ''
+            ELSE UPPER (EMP.COMPLEMENTO)
+        END AS COMP_EMP,
+        UPPER (CIDE.NOMECID) AS CID_EMP,
+        EMP.TELEFONE AS TEM_EMP,
+        UPPER (BAIE.NOMEBAI) AS BAI_EMP,
+        CEPE.CEP AS CEP_EMP,
+        UFE.UF AS UF_EMP,
+        EMP.EMAIL AS EMAIL_EMP,
+        EMP.INSCESTAD,
+        CFO.DESCRCFO,
+        C.NUMPROTOC,
+        
+        --DADOS CLIENTE
+        PAR.RAZAOSOCIAL AS CLIENTE,
+        PAR.CGC_CPF,
+        UPPER (TSI.TIPO) AS TIPO_PAR,
+        UPPER (TSI.NOMEEND) AS ENDERECO,
+        
+        CASE
+            WHEN PAR.NUMEND IS NULL THEN ''
+            ELSE UPPER (PAR.NUMEND)
+        END AS NRO,
+        UPPER (PAR.COMPLEMENTO) AS COMP_PAR,
+        UPPER (BAI.NOMEBAI) AS BAIRRO,
+        PAR.CEP,
+        CID.NOMECID AS CIDADE,
+        UF.UF,
+        PAR.TELEFONE,
+        PAR.INSCESTADNAUF,
+        V.APELIDO AS COMISSIONADO,
+        (SELECT DISTINCT PV.DESCRTIPVENDA FROM sankhya.tgftpv PV WHERE PV.CODTIPVENDA = CONVERT(INTEGER,C.CODTIPVENDA)) AS VENDA,
+       
+        CONVERT(VARCHAR(30), C.DTNEG, 103) AS DTNEG,
+        CONVERT(VARCHAR(30), C.DTENTSAI, 103) AS DTENTSAI,
+        convert(varchar, getdate(), 108) AS HORASAIDA,
+    
+        --dados frete
+          CASE WHEN TRANS.CODPARC <> 0 THEN TRANS.RAZAOSOCIAL
+          ELSE ' '
+        END TRANSRAZAOSOCIAL,
+            CASE
+               WHEN C.CIF_FOB = 'C' THEN 'EMITENTE'
+               ELSE 'DESTINATÁRIO'
+        END AS CIF_FOB,
+        CASE
+          WHEN TRANS.CODPARC <> 0 THEN 'N. ' + TRANS.NUMEND
+          ELSE ' '
+        END TRANSNUMEND,
+        CASE
+              WHEN TRANS.CODPARC <> 0 THEN TRANS.IDENTINSCESTAD
+          ELSE ' '
+        END TRANSIDENTINSCESTAD,
+        CASE
+          WHEN TRANS.CODPARC <> 0 THEN TRANS.CGC_CPF
+          ELSE ' '
+        END TRANSCGC_CPF,
+        TRANS.CODPARC AS TRCODP,		
+            TRANS.COMPLEMENTO AS TRCOMP,
+            ENDE.TIPO AS TRTIPO,
+            ENDE.NOMEEND AS TRNOMEND,
+            CIDT.NOMECID AS TRNOMECID,
+            UFT.UF AS TRUF,
+        
+        CASE
+               WHEN (RTRIM(C.PLACA) IS NOT NULL ) THEN CABUF.UF
+              WHEN (C.ORDEMCARGA IS NOT NULL AND C.ORDEMCARGA <> 0 AND ORD.CODVEICULO <> 0) THEN ORDVEIUF.UF
+              WHEN CABVEI.CODVEICULO <> 0 THEN CABVEIUF.UF
+              ELSE ''
+          END AS TRANSUFV,
+        CASE
+                WHEN (RTRIM(C.CODPARCTRANSP) IS NOT NULL AND C.CODPARCTRANSP>0) THEN UFT.UF
+              ELSE ''
+        END AS TRANSUF,
+          CASE
+              WHEN (RTRIM(C.PLACA) IS NOT NULL ) THEN C.ANTT
+              WHEN (C.ORDEMCARGA IS NOT NULL AND C.ORDEMCARGA <> 0 AND ORD.CODVEICULO <> 0) THEN ORDVEI.ANTT
+              WHEN CABVEI.CODVEICULO <> 0 THEN CABVEI.ANTT
+              ELSE ''
+          END AS TRANSANTT,
+          CASE
+                WHEN (RTRIM(C.PLACA) IS NOT NULL ) THEN C.PLACA
+              WHEN (C.ORDEMCARGA IS NOT NULL AND C.ORDEMCARGA <> 0 AND ORD.CODVEICULO <> 0) THEN ORDVEI.PLACA
+              WHEN CABVEI.CODVEICULO <> 0 THEN CABVEI.PLACA
+              ELSE ''
+          END AS TRANSPLACA,
+          C.QTDVOL,	
+          C.VOLUME,
+          C.MARCA,
+          C.NUMERACAOVOLUMES,
+          CASE
+          WHEN C.PESOBRUTO = 0 THEN NULL
+          ELSE C.PESOBRUTO
+            END AS PESOBRUTO,
+                CASE
+                    WHEN C.PESO = 0 THEN NULL
+                    ELSE C.PESO
+            END AS PESO
+
+ FROM  SANKHYA.TGFCAB C 
+        INNER JOIN sankhya.TGFTOP TPO ON (C.CODTIPOPER = TPO.CODTIPOPER AND C.DHTIPOPER = TPO.DHALTER)
+        LEFT JOIN SANKHYA.TGFITE ITE ON C.NUNOTA = ITE.NUNOTA
+        LEFT JOIN SANKHYA.TGFCFO CFO ON CFO.CODCFO = ITE.CODCFO
+INNER JOIN sankhya.AD_REVENDASGO RV ON (RV.CODAGENCIADOR=C.CODPARC)
+LEFT JOIN sankhya.tgftpv PV ON C.NUNOTA = PV.NUNOTA
+        LEFT JOIN SANKHYA.TGFVEN V ON C.CODVEND = V.CODVEND
+        LEFT JOIN SANKHYA.TGFPAR PAR ON PAR.CODPARC = C.CODPARC
+        LEFT JOIN SANKHYA.TSIEMP EMP ON EMP.CODEMP = C.CODEMP
+        LEFT JOIN SANKHYA.TSIEND TSI ON TSI.CODEND = PAR.CODEND
+        LEFT JOIN SANKHYA.TSICID CID ON (PAR.CODCID = CID.CODCID)
+        LEFT JOIN SANKHYA.TSIBAI BAI ON (PAR.CODBAI = BAI.CODBAI)
+        LEFT JOIN SANKHYA.TSIUFS UF ON (UF.CODUF = CID.UF)
+        
+        
+        LEFT JOIN SANKHYA.TSIEND TSIE ON TSIE.CODEND = EMP.CODEND
+        LEFT JOIN SANKHYA.TSICID CIDE ON (EMP.CODCID = CIDE.CODCID)
+        LEFT JOIN SANKHYA.TSIBAI BAIE ON (EMP.CODBAI = BAIE.CODBAI)
+        LEFT JOIN SANKHYA.TSIUFS UFE ON (UFE.CODUF = CIDE.UF)
+        LEFT JOIN SANKHYA.TSICEP CEPE ON CEPE.CODEND = TSIE.CODEND
+    
+         LEFT JOIN SANKHYA.TGFPAR TRANS ON (TRANS.CODPARC = C.CODPARCTRANSP)
+         LEFT JOIN SANKHYA.TSIEND ENDE ON (TRANS.CODEND = ENDE.CODEND)
+         LEFT JOIN SANKHYA.TSICID CIDT  ON (TRANS.CODCID = CIDT.CODCID)
+         LEFT JOIN SANKHYA.TSIUFS UFT   ON (CIDT.UF = UFT.CODUF)
+         LEFT JOIN sankhya.TGFVEI CABVEI ON (CABVEI.CODVEICULO = C.CODVEICULO)
+        LEFT JOIN sankhya.TSICID CABVEICID ON (CABVEICID.CODCID = CABVEI.CODCID)
+        LEFT JOIN sankhya.TSIUFS CABVEIUF ON (CABVEIUF.CODUF = CABVEICID.UF)
+        LEFT JOIN sankhya.TGFORD ORD ON (ORD.CODEMP = C.CODEMP AND ORD.ORDEMCARGA = C.ORDEMCARGA)
+        LEFT JOIN sankhya.TGFVEI ORDVEI ON (ORDVEI.CODVEICULO = ORD.CODVEICULO)
+        LEFT JOIN sankhya.TSICID ORDVEICID ON (ORDVEICID.CODCID = ORDVEI.CODCID)
+        LEFT JOIN sankhya.TSIUFS ORDVEIUF ON (ORDVEIUF.CODUF = ORDVEICID.UF)
+        LEFT JOIN SANKHYA.TSIUFS CABUF ON (C.UFVEICULO = CABUF.CODUF)
+
+
+    WHERE RV.COD_LOGIN =${idlogin}
+    AND C.NUNOTA =${sla}
+    AND C.VLRNOTA IS NOT NULL
+    AND C.CODEMP = 30
+    AND C.STATUSNOTA = 'L'
+    AND C.TIPMOV = 'V'
+   ORDER BY C.NUNOTA`);
+
+    //CÁLCULO DO IMPOSTO
+    const links3 = await pool.query(`SELECT
+   FORMAT(C.BASEICMS, 'N2') AS BASEICMS,
+   FORMAT(C.VLRICMS, 'N2') AS VLRICMS,
+FORMAT(C.BASESUBSTIT, 'N2') AS BASESUBSTIT,
+FORMAT(C.VLRSUBST, 'N2') AS VLRSUBST,
+FORMAT(C.VLRFRETE, 'N2') AS VLRFRETE,
+FORMAT(C.VLRSEG, 'N2') AS VLRSEG,
+FORMAT(C.VLRDESCSERV, 'N2') AS VLRDESCSERV,
+FORMAT((C.VLRDESTAQUE + C.VLRJURO + C.VLREMB), 'N2') AS OUTRASDESP,
+FORMAT(C.VLRIPI, 'N2') AS VLRIPI,
+FORMAT(C.VLRNOTA, 'N2') AS VLRNOTA,
+FORMAT( SUM(ITE.VLRTOT), 'N2') AS VLRTOT,
+FORMAT(SUM(ITE.VLRDESC), 'N2') AS VLRDESC,
+       C.TIPFRETE
+   
+   FROM  SANKHYA.TGFCAB C 
+   LEFT JOIN SANKHYA.TGFITE ITE ON C.NUNOTA = ITE.NUNOTA
+   
+   INNER JOIN sankhya.AD_REVENDASGO RV ON (RV.CODAGENCIADOR=C.CODPARC)
+   WHERE    RV.COD_LOGIN =${idlogin}
+   AND C.NUNOTA =${sla}
+   AND C.VLRNOTA IS NOT NULL
+   AND C.CODEMP = 30
+   AND C.STATUSNOTA = 'L'
+   AND C.TIPMOV = 'V'
+   GROUP BY C.BASEICMS,   C.VLRICMS,   C.BASESUBSTIT,   C.VLRSUBST,   C.VLRFRETE,   C.TIPFRETE,   C.VLRSEG,   C.VLRDESCSERV,
+   (C.VLRDESTAQUE + C.VLRJURO + C.VLREMB),   C.VLRIPI,   C.VLRNOTA`);
+
+    //RODAPÉ
+    const links4 = await pool.query(`SELECT
+
+   CASE
+       WHEN (SELECT SUM(VLRTOT - VLRDESC)
+       FROM sankhya.TGFITE ITE
+       WHERE NUNOTA = C.NUNOTA
+       AND SEQUENCIA > 0
+       AND USOPROD = 'S') IS NULL THEN 0              
+                 ELSE (SELECT SUM(VLRTOT - VLRDESC)
+       FROM sankhya.TGFITE ITE
+       WHERE NUNOTA = C.NUNOTA
+       AND SEQUENCIA > 0
+       AND USOPROD = 'S')
+             END AS RDPVLRTOTSERV,
+   
+       FORMAT(C.BASEISS, 'N2') AS RDBASEISS,
+       FORMAT(C.VLRISS, 'N2') AS RDVLRISS,      
+       C.OBSERVACAO
+   
+   FROM sankhya.TGFCAB C
+   INNER JOIN sankhya.AD_REVENDASGO RV ON (RV.CODAGENCIADOR=C.CODPARC)
+   
+   WHERE  RV.COD_LOGIN =${idlogin}
+   AND C.NUNOTA =${sla}
+   AND C.VLRNOTA IS NOT NULL
+   AND C.CODEMP = 30
+   AND C.STATUSNOTA = 'L'
+   AND C.TIPMOV = 'V'`);
+
+
+    res.render('links/revenda/nf', {
+        geral: links.recordset,
+        cont: links2.recordset,
+        imp: links3.recordset,
+        rdp: links4.recordset
+    });
+});
+
+//impressão nota fical cliente da revenda
+router.get('/revenda/nfc/:texto?', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
+    const nunota = req.body.texto;
+    const params = req.params.texto;
+    const sla = params
+
+    console.log('params')
+    console.log(params)
+
+    //nota item
+    const links = await pool.query(`SELECT DISTINCT
+    C.NUMNOTA,
+        C.NUNOTA,
+        CONVERT(VARCHAR(30), C.DTNEG, 103) AS DTNEG,    
+        C.CODVEND,
+        V.APELIDO AS VENDEDOR,
+        FORMAT(C.VLRNOTA, 'N', 'pt-br') AS VLRNOTA,              
+     --------   
+    
+    CASE
+            WHEN (RTRIM(I.PRODUTONFE) IS NOT NULL ) THEN I.PRODUTONFE
+          WHEN ( (RTRIM(I.PRODUTONFE) IS NULL) AND
+                 ('S' = (SELECT LOGICO FROM SANKHYA.TSIPAR WHERE CHAVE = 'HAUNI' AND CODUSU = 0)) AND
+             ((PRO.REFERENCIA) IS NULL)
+            ) THEN CAST(PRO.CODPROD AS VARCHAR)
+              WHEN ( (RTRIM(I.PRODUTONFE) IS NULL) AND
+                ('S' = (SELECT LOGICO FROM SANKHYA.TSIPAR WHERE CHAVE = 'HAUNI' AND CODUSU = 0)) AND
+             ((PRO.REFERENCIA) IS NOT NULL)
+            ) THEN PRO.REFERENCIA
+          WHEN ( (RTRIM(I.PRODUTONFE) IS NULL) AND ('N' = (SELECT LOGICO FROM SANKHYA.TSIPAR WHERE CHAVE = 'HAUNI' AND CODUSU = 0))) THEN CAST(I.CODPROD AS VARCHAR)
+              WHEN ( ( (SELECT LOGICO FROM SANKHYA.TSIPAR WHERE CHAVE = 'HAUNI' AND CODUSU = 0) IS NULL)) THEN CAST(PRO.CODPROD AS VARCHAR)
+        END AS CODPROD,
+    PRO.DESCRPROD,
+    CASE
+            WHEN (RTRIM(PRO.NCM) IS NOT NULL ) THEN PRO.NCM
+          ELSE IPI.CODFISIPI
+        END AS 	CODFISIPI,
+    pro.origprod , 
+    /*  CASE WHEN ((EMP.SIMPLES = 'S') AND (I.CODTRIB <> 30 AND I.CODTRIB <> 60)) THEN I.CSOSN
+             ELSE I.CODTRIB
+        END AS CODTRIB, */
+        REPLICATE('0', 2 - LEN(I.CODTRIB)) + RTrim(I.CODTRIB) AS CODTRIB,
+    I.CODCFO,
+    I.CODVOL,
+    FORMAT(I.QTDNEG, 'N', 'pt-br')  AS QTDNEG,
+    FEMP.VLRLIQITEMNFE,
+    FORMAT(I.VLRUNIT, 'N', 'pt-br')  AS VLRUNIT,
+    FORMAT((I.VLRDESC + I.VLRREPRED), 'N', 'pt-br') AS VLRDESC,
+    FORMAT(I.PERCDESC, 'N', 'pt-br') AS PERCDESC,
+    FORMAT(I.VLRTOT, 'N', 'pt-br') AS VLRTOT,
+    FORMAT(I.BASEICMS, 'N', 'pt-br') AS BASEICMS,
+    FORMAT(I.VLRICMS, 'N', 'pt-br') AS VLRICMS,
+    FORMAT(I.VLRIPI, 'N', 'pt-br') AS VLRIPI,
+    FORMAT(I.ALIQICMS, 'N', 'pt-br') AS ALIQICMS,   
+    FORMAT(I.ALIQIPI, 'N', 'pt-br') AS ALIQIPI,    
+    FORMAT(C.VLRFRETE, 'N', 'pt-br') AS VLR_FRETE,
+    FORMAT(c.VLRSEG, 'N', 'pt-br') AS VLR_SEGURO,
+    FORMAT(I.VLRSUBST, 'N', 'pt-br') AS VLR_ST
+     
+    --------- 
+    FROM sankhya.TGFCAB C
+    LEFT JOIN SANKHYA.TGFPAR PTR ON (C.CODPARCTRANSP=PTR.CODPARC)
+    INNER JOIN sankhya.TGFVEN V ON (C.CODVEND=V.CODVEND)
+    LEFT JOIN sankhya.TGFPAR P ON (P.CODPARC=C.CODPARC)
+   LEFT JOIN sankhya.AD_REVENDASGO RV ON (C.CODMOTORISTA=RV.CODAGENCIADOR)
+    INNER JOIN sankhya.TGFITE I  ON (C.NUNOTA = I.NUNOTA)
+    INNER JOIN SANKHYA.TSIEMP EMP ON (EMP.CODEMP = C.CODEMP)
+    INNER JOIN SANKHYA.TGFPRO PRO ON (I.CODPROD = PRO.CODPROD)
+    INNER JOIN SANKHYA.TGFEMP FEMP ON (C.CODEMP = FEMP.CODEMP)
+    LEFT JOIN SANKHYA.TGFIPI IPI ON (IPI.CODIPI = PRO.CODIPI)
+    WHERE  C.CODMOTORISTA =RV.CODAGENCIADOR
+    AND RV.COD_LOGIN =${idlogin}
+    AND C.NUNOTA =${sla}
+    AND C.VLRNOTA IS NOT NULL
+    AND C.CODEMP = 30
+    AND C.STATUSNOTA = 'L'
+    AND C.TIPMOV = 'V'
+    ORDER BY C.NUNOTA`);
+
+    //cabeçalho nota
+    const links2 = await pool.query(`SELECT
+    DISTINCT
+        --cabeçalho
+        C.NUMNOTA,
+        C.SERIENOTA,
+        C.CHAVENFE,
+        CASE WHEN TPO.ATUALLIVFIS = 'S' THEN 1 ELSE 2 END AS ATUALLIVFIS ,
+        CASE
+            WHEN C.AD_VALIDPROP IS NULL THEN 10
+            ELSE C.AD_VALIDPROP
+        END AS AD_VALIDPROP,
+        C.NUNOTA AS PROPOSTA,
+        C.DTNEG AS DATA_PROPOSTA,
+        
+        --ENDEREÇO EMPRESA
+        EMP.RAZAOSOCIAL AS RZ_EMP,
+        EMP.CGC AS CGC_EMP,
+        UPPER (TSIE.TIPO) AS TIPO_EMP,
+        UPPER (TSIE.NOMEEND) AS END_EMP,
+        CASE
+            WHEN EMP.NUMEND IS NULL THEN ''
+            ELSE UPPER (EMP.NUMEND)
+        END AS NUM_EMP,
+        CASE
+            WHEN EMP.COMPLEMENTO IS NULL THEN ''
+            ELSE UPPER (EMP.COMPLEMENTO)
+        END AS COMP_EMP,
+        UPPER (CIDE.NOMECID) AS CID_EMP,
+        EMP.TELEFONE AS TEM_EMP,
+        UPPER (BAIE.NOMEBAI) AS BAI_EMP,
+        CEPE.CEP AS CEP_EMP,
+        UFE.UF AS UF_EMP,
+        EMP.EMAIL AS EMAIL_EMP,
+        EMP.INSCESTAD,
+        CFO.DESCRCFO,
+        C.NUMPROTOC,
+        
+        --DADOS CLIENTE
+        PAR.RAZAOSOCIAL AS CLIENTE,
+        PAR.CGC_CPF,
+        UPPER (TSI.TIPO) AS TIPO_PAR,
+        UPPER (TSI.NOMEEND) AS ENDERECO,
+        
+        CASE
+            WHEN PAR.NUMEND IS NULL THEN ''
+            ELSE UPPER (PAR.NUMEND)
+        END AS NRO,
+        UPPER (PAR.COMPLEMENTO) AS COMP_PAR,
+        UPPER (BAI.NOMEBAI) AS BAIRRO,
+        PAR.CEP,
+        CID.NOMECID AS CIDADE,
+        UF.UF,
+        PAR.TELEFONE,
+        PAR.INSCESTADNAUF,
+        V.APELIDO AS COMISSIONADO,
+        (SELECT DISTINCT PV.DESCRTIPVENDA FROM sankhya.tgftpv PV WHERE PV.CODTIPVENDA = CONVERT(INTEGER,C.CODTIPVENDA)) AS VENDA,
+       
+        CONVERT(VARCHAR(30), C.DTNEG, 103) AS DTNEG,
+        CONVERT(VARCHAR(30), C.DTENTSAI, 103) AS DTENTSAI,
+        convert(varchar, getdate(), 108) AS HORASAIDA,
+    
+        --dados frete
+          CASE WHEN TRANS.CODPARC <> 0 THEN TRANS.RAZAOSOCIAL
+          ELSE ' '
+        END TRANSRAZAOSOCIAL,
+            CASE
+               WHEN C.CIF_FOB = 'C' THEN 'EMITENTE'
+               ELSE 'DESTINATÁRIO'
+        END AS CIF_FOB,
+        CASE
+          WHEN TRANS.CODPARC <> 0 THEN 'N. ' + TRANS.NUMEND
+          ELSE ' '
+        END TRANSNUMEND,
+        CASE
+              WHEN TRANS.CODPARC <> 0 THEN TRANS.IDENTINSCESTAD
+          ELSE ' '
+        END TRANSIDENTINSCESTAD,
+        CASE
+          WHEN TRANS.CODPARC <> 0 THEN TRANS.CGC_CPF
+          ELSE ' '
+        END TRANSCGC_CPF,
+        TRANS.CODPARC AS TRCODP,		
+            TRANS.COMPLEMENTO AS TRCOMP,
+            ENDE.TIPO AS TRTIPO,
+            ENDE.NOMEEND AS TRNOMEND,
+            CIDT.NOMECID AS TRNOMECID,
+            UFT.UF AS TRUF,
+        
+        CASE
+               WHEN (RTRIM(C.PLACA) IS NOT NULL ) THEN CABUF.UF
+              WHEN (C.ORDEMCARGA IS NOT NULL AND C.ORDEMCARGA <> 0 AND ORD.CODVEICULO <> 0) THEN ORDVEIUF.UF
+              WHEN CABVEI.CODVEICULO <> 0 THEN CABVEIUF.UF
+              ELSE ''
+          END AS TRANSUFV,
+        CASE
+                WHEN (RTRIM(C.CODPARCTRANSP) IS NOT NULL AND C.CODPARCTRANSP>0) THEN UFT.UF
+              ELSE ''
+        END AS TRANSUF,
+          CASE
+              WHEN (RTRIM(C.PLACA) IS NOT NULL ) THEN C.ANTT
+              WHEN (C.ORDEMCARGA IS NOT NULL AND C.ORDEMCARGA <> 0 AND ORD.CODVEICULO <> 0) THEN ORDVEI.ANTT
+              WHEN CABVEI.CODVEICULO <> 0 THEN CABVEI.ANTT
+              ELSE ''
+          END AS TRANSANTT,
+          CASE
+                WHEN (RTRIM(C.PLACA) IS NOT NULL ) THEN C.PLACA
+              WHEN (C.ORDEMCARGA IS NOT NULL AND C.ORDEMCARGA <> 0 AND ORD.CODVEICULO <> 0) THEN ORDVEI.PLACA
+              WHEN CABVEI.CODVEICULO <> 0 THEN CABVEI.PLACA
+              ELSE ''
+          END AS TRANSPLACA,
+          FORMAT(C.QTDVOL, 'N', 'pt-br') AS QTDVOL,	
+          C.VOLUME,
+          C.MARCA,
+          C.NUMERACAOVOLUMES,
+          CASE
+          WHEN C.PESOBRUTO = 0 THEN NULL
+          ELSE C.PESOBRUTO
+            END AS PESOBRUTO,
+                CASE
+                    WHEN C.PESO = 0 THEN NULL
+                    ELSE C.PESO
+            END AS PESO
+        
+        FROM  SANKHYA.TGFCAB C 
+        INNER JOIN sankhya.TGFTOP TPO ON (C.CODTIPOPER = TPO.CODTIPOPER AND C.DHTIPOPER = TPO.DHALTER)
+        LEFT JOIN SANKHYA.TGFITE ITE ON C.NUNOTA = ITE.NUNOTA
+        LEFT JOIN SANKHYA.TGFCFO CFO ON CFO.CODCFO = ITE.CODCFO
+        LEFT JOIN sankhya.AD_REVENDASGO RV ON (C.CODMOTORISTA=RV.CODAGENCIADOR)
+        LEFT JOIN sankhya.tgftpv PV ON C.NUNOTA = PV.NUNOTA
+        LEFT JOIN SANKHYA.TGFVEN V ON C.CODVEND = V.CODVEND
+        LEFT JOIN SANKHYA.TGFPAR PAR ON PAR.CODPARC = C.CODPARC
+        LEFT JOIN SANKHYA.TSIEMP EMP ON EMP.CODEMP = C.CODEMP
+        LEFT JOIN SANKHYA.TSIEND TSI ON TSI.CODEND = PAR.CODEND
+        LEFT JOIN SANKHYA.TSICID CID ON (PAR.CODCID = CID.CODCID)
+        LEFT JOIN SANKHYA.TSIBAI BAI ON (PAR.CODBAI = BAI.CODBAI)
+        LEFT JOIN SANKHYA.TSIUFS UF ON (UF.CODUF = CID.UF)
+        
+        
+        LEFT JOIN SANKHYA.TSIEND TSIE ON TSIE.CODEND = EMP.CODEND
+        LEFT JOIN SANKHYA.TSICID CIDE ON (EMP.CODCID = CIDE.CODCID)
+        LEFT JOIN SANKHYA.TSIBAI BAIE ON (EMP.CODBAI = BAIE.CODBAI)
+        LEFT JOIN SANKHYA.TSIUFS UFE ON (UFE.CODUF = CIDE.UF)
+        LEFT JOIN SANKHYA.TSICEP CEPE ON CEPE.CODEND = TSIE.CODEND
+    
+         LEFT JOIN SANKHYA.TGFPAR TRANS ON (TRANS.CODPARC = C.CODPARCTRANSP)
+         LEFT JOIN SANKHYA.TSIEND ENDE ON (TRANS.CODEND = ENDE.CODEND)
+         LEFT JOIN SANKHYA.TSICID CIDT  ON (TRANS.CODCID = CIDT.CODCID)
+         LEFT JOIN SANKHYA.TSIUFS UFT   ON (CIDT.UF = UFT.CODUF)
+         LEFT JOIN sankhya.TGFVEI CABVEI ON (CABVEI.CODVEICULO = C.CODVEICULO)
+        LEFT JOIN sankhya.TSICID CABVEICID ON (CABVEICID.CODCID = CABVEI.CODCID)
+        LEFT JOIN sankhya.TSIUFS CABVEIUF ON (CABVEIUF.CODUF = CABVEICID.UF)
+        LEFT JOIN sankhya.TGFORD ORD ON (ORD.CODEMP = C.CODEMP AND ORD.ORDEMCARGA = C.ORDEMCARGA)
+        LEFT JOIN sankhya.TGFVEI ORDVEI ON (ORDVEI.CODVEICULO = ORD.CODVEICULO)
+        LEFT JOIN sankhya.TSICID ORDVEICID ON (ORDVEICID.CODCID = ORDVEI.CODCID)
+        LEFT JOIN sankhya.TSIUFS ORDVEIUF ON (ORDVEIUF.CODUF = ORDVEICID.UF)
+        LEFT JOIN SANKHYA.TSIUFS CABUF ON (C.UFVEICULO = CABUF.CODUF)
+    WHERE  C.CODMOTORISTA =RV.CODAGENCIADOR
+    AND RV.COD_LOGIN =${idlogin}
+    AND C.NUNOTA =${sla}
+    AND C.VLRNOTA IS NOT NULL
+    AND C.CODEMP = 30
+    AND C.STATUSNOTA = 'L'
+    AND C.TIPMOV = 'V'`);
+
+    //CÁLCULO DO IMPOSTO
+    const links3 = await pool.query(`SELECT
+   FORMAT(C.BASEICMS, 'N', 'pt-br') AS BASEICMS,
+   FORMAT(C.VLRICMS, 'N', 'pt-br') AS VLRICMS,
+FORMAT(C.BASESUBSTIT, 'N', 'pt-br') AS BASESUBSTIT,
+FORMAT(C.VLRSUBST, 'N', 'pt-br') AS VLRSUBST,
+FORMAT(C.VLRFRETE, 'N', 'pt-br') AS VLRFRETE,
+FORMAT(C.VLRSEG, 'N', 'pt-br') AS VLRSEG,
+FORMAT(C.VLRDESCSERV, 'N', 'pt-br') AS VLRDESCSERV,
+FORMAT((C.VLRDESTAQUE + C.VLRJURO + C.VLREMB), 'N', 'pt-br') AS OUTRASDESP,
+FORMAT(C.VLRIPI, 'N', 'pt-br') AS VLRIPI,
+FORMAT(C.VLRNOTA, 'N', 'pt-br') AS VLRNOTA,
+FORMAT( SUM(ITE.VLRTOT), 'N', 'pt-br') AS VLRTOT,
+FORMAT(SUM(ITE.VLRDESC), 'N', 'pt-br') AS VLRDESC,
+       C.TIPFRETE
+   
+   FROM  SANKHYA.TGFCAB C 
+   LEFT JOIN SANKHYA.TGFITE ITE ON C.NUNOTA = ITE.NUNOTA
+   
+   LEFT JOIN sankhya.AD_REVENDASGO RV ON (C.CODMOTORISTA=RV.CODAGENCIADOR)
+   WHERE  C.CODMOTORISTA =RV.CODAGENCIADOR
+   AND RV.COD_LOGIN =${idlogin}
+   AND C.NUNOTA =${sla}
+   AND C.VLRNOTA IS NOT NULL
+   AND C.CODEMP = 30
+   AND C.STATUSNOTA = 'L'
+   AND C.TIPMOV = 'V'
+   GROUP BY C.BASEICMS,   C.VLRICMS,   C.BASESUBSTIT,   C.VLRSUBST,   C.VLRFRETE,   C.TIPFRETE,   C.VLRSEG,   C.VLRDESCSERV,
+   (C.VLRDESTAQUE + C.VLRJURO + C.VLREMB),   C.VLRIPI,   C.VLRNOTA`);
+
+    //RODAPÉ
+    const links4 = await pool.query(`SELECT
+
+    CASE
+        WHEN (SELECT SUM(VLRTOT - VLRDESC)
+        FROM sankhya.TGFITE ITE
+        WHERE NUNOTA = C.NUNOTA
+        AND SEQUENCIA > 0
+        AND USOPROD = 'S') IS NULL THEN 0              
+                  ELSE (SELECT SUM(VLRTOT - VLRDESC)
+        FROM sankhya.TGFITE ITE
+        WHERE NUNOTA = C.NUNOTA
+        AND SEQUENCIA > 0
+        AND USOPROD = 'S')
+              END AS RDPVLRTOTSERV,
+    
+              FORMAT(C.BASEISS, 'N', 'pt-br') AS RDBASEISS,
+              FORMAT(C.VLRISS, 'N', 'pt-br') AS RDVLRISS,      
+        C.OBSERVACAO
+    
+    FROM sankhya.TGFCAB C
+    LEFT JOIN sankhya.AD_REVENDASGO RV ON (C.CODMOTORISTA=RV.CODAGENCIADOR)
+    
+    WHERE  C.CODMOTORISTA =RV.CODAGENCIADOR
+    AND RV.COD_LOGIN =${idlogin}
+    AND C.NUNOTA =${sla}
+    AND C.VLRNOTA IS NOT NULL
+    AND C.CODEMP = 30
+    AND C.STATUSNOTA = 'L'
+    AND C.TIPMOV = 'V'`);
+
+    res.render('links/revenda/nfc', {
+        geral: links.recordset,
+        cont: links2.recordset,
+        imp: links3.recordset,
+        rdp: links4.recordset
+    });
 });
 
 //LISTA ESTOQUE REVENDAS SIGMAONE
-router.get('/revenda/estoque', isLoggedIn,  async (req, res) => {
+router.get('/revenda/estoque', isLoggedIn, async (req, res) => {
     const links = await pool.query(`SELECT
     Estoque.CODEMP,
     Estoque.CODPROD,
@@ -1237,13 +1795,15 @@ router.get('/revenda/estoque', isLoggedIn,  async (req, res) => {
     Estoque.CODLOCAL,
     Grupo.DESCRGRUPOPROD,
     Estoque.RESERVADO`);
-    res.render('links/revenda/estoque', { lista: links.recordset });
+    res.render('links/revenda/estoque', {
+        lista: links.recordset
+    });
 });
 
 //LISTAGEM DE REGISTROS REFERENTES AOS USUÁRIOS ADMINISTRADORES
 //listar todos os usuários (login) cadastrados
-router.get('/allogin', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/allogin', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT 
     CODLOGIN,
     NOMEUSU,
@@ -1257,57 +1817,66 @@ router.get('/allogin', isLoggedIn,  async (req, res) => {
     LEFT JOIN sankhya.AD_TBACESSO AC ON (L.CODLOGIN=AC.ID_LOGIN)
     WHERE CLIENTSGO = 'S'
     AND CODLOGIN <> 836`);
-    res.render('links/allogin', { lista: links.recordset });
+    res.render('links/allogin', {
+        lista: links.recordset
+    });
 });
 
 //listar todas os clientes sigma cadastrada (admin_sigmaone)
-router.get('/revenda/listrevenda', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/revenda/listrevenda', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT RV.CODAGENCIADOR, RV.NOME_AGEN, L.NOMEUSU AS LOGIN
     FROM sankhya.AD_REVENDASGO RV
     INNER JOIN sankhya.AD_TBLOGIN L ON (L.CODLOGIN=RV.COD_LOGIN)`);
-    res.render('links/revenda/listrevenda', { lista: links.recordset });
+    res.render('links/revenda/listrevenda', {
+        lista: links.recordset
+    });
 });
 
 //listar todos as revendas sigma cadastrada (admin_sigmaone)
-router.get('/clientes/liscliente', isLoggedIn,  async (req, res) => {
-    const idlogin = req.user.CODLOGIN    
+router.get('/clientes/liscliente', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
     const links = await pool.query(`SELECT CS.CODPARC,P.NOMEPARC, L.NOMEUSU AS LOGIN
     FROM sankhya.AD_CLIENTESGO CS
     INNER JOIN sankhya.TGFPAR P ON (CS.CODPARC=P.CODPARC)
     INNER JOIN sankhya.AD_TBLOGIN L ON (L.CODLOGIN=CS.COD_LOGIN)`);
-    res.render('links/clientes/liscliente', { lista: links.recordset });
+    res.render('links/clientes/liscliente', {
+        lista: links.recordset
+    });
 });
 
 //DELETE UPDATE 
-
 //remover parceiro
-router.get('/delete/:id', isLoggedIn,  async (req, res) => {
-    const {id}  = req.params;
+router.get('/delete/:id', isLoggedIn, async (req, res) => {
+    const {
+        id
+    } = req.params;
     await pool.query(`DELETE FROM sankhya.AD_TBPARCEIRO WHERE ID = ${id}`);
     req.flash('success', 'Link Removed Successfully');
     res.redirect('/links');
 });
 
 //editar parceiro - exibição tela
-router.get('/edit/:id', isLoggedIn,  async (req, res) => {
-    const {id}  = req.params;
+router.get('/edit/:id', isLoggedIn, async (req, res) => {
+    const {
+        id
+    } = req.params;
     const links = await pool.query(`SELECT * FROM sankhya.AD_TBPARCEIRO WHERE ID = ${id}`);
-    res.render('links/edit', { lista: links.recordset[0] })
-    /*//req.flash('success', 'Link Removed Successfully');
-    res.redirect('/links'); */
+    res.render('links/edit', {
+        lista: links.recordset[0]
+    })
 });
 
 //update
 //ADICIONAR CONTRATOS AOS NOVOS USUÁRIOS, SOMENTE ADMIN
-router.get('/password', isLoggedIn, async (req, res) => {  
-   
+router.get('/password', isLoggedIn, async (req, res) => {
+
     res.render('links/passwords')
 });
 
-router.post('/password', isLoggedIn, async (req, res) => {  
-    const idlogin = req.user.CODLOGIN  
-    const contrato = req.body.contrato;    
+router.post('/password', isLoggedIn, async (req, res) => {
+    const idlogin = req.user.CODLOGIN
+    const contrato = req.body.contrato;
 
     console.log('contrato')
     console.log(contrato)
@@ -1317,10 +1886,10 @@ router.post('/password', isLoggedIn, async (req, res) => {
 
     pool.query(`UPDATE sankhya.AD_TBLOGIN
             SET SENHA = '${contrato}'
-            WHERE CODLOGIN = '${idlogin}'`);   
-    
+            WHERE CODLOGIN = '${idlogin}'`);
+
     req.flash('success', 'Senha atualizada com Sucesso!!!!')
     res.redirect('/signin')
 });
 
-module.exports = router; 
+module.exports = router;
