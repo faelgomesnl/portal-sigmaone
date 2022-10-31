@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+
+      <style type="text/css">
+      table {border: 1px solid #000000;border-collapse: collapse; margin: 0 auto;  
+      padding: 0px;table-layout: fixed;min-width: 100%;}
+      table th {padding: 8px;border: 1px solid #000000;
+      background:#1b90bb;color:#FFFFFF;
+      font-weight:bold;}
+      table td{padding: 8px;border: 1px solid #000000;}
+      table tr{background-color: #dddddd;color:#000000;
+      font-family:Courier New, Helvetica, sans-serif;
+      font-size: 13px;}
+
+      </style>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Material Design para usar os Icones -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Bootstrap CSS -->
+    {{!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"> --}}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.21/af-2.3.5/b-1.6.3/b-colvis-1.6.3/b-flash-1.6.3/b-html5-1.6.3/b-print-1.6.3/cr-1.5.2/fc-3.3.1/fh-3.1.7/kt-2.5.2/r-2.2.5/rg-1.1.2/rr-1.2.7/sc-2.0.2/sp-1.1.1/sl-1.3.1/datatables.min.css"/>
+
+    
+  </head>
+  <body onload="window.print(), voltar()">  
+        
+
+      <table class="table">
+          {{#each cont}}
+<tr >
+	<td style="vertical-align:middle !important" rowspan='5' colspan='1' align="center"><img src="/img/logo_sigma.png" alt="Logo Fazt" height="50" width="185"></td>
+	<td style="vertical-align:middle !important" rowspan='2' colspan='1'align="center"><font size="4"><b>{{RZ_EMP}}</b></font></td>
+	<td style="vertical-align:middle !important" width="230px" align="center"><font size="5"><b>DANFE</b></font></td>
+	<td style="vertical-align:middle !important" rowspan='2'  width="370px"colspan='1' >CHAVE DE ACESSO <br>
+ <b  class="font1">{{CHAVENFE}}</b></td>
+</tr>
+<tr>
+	<td style="vertical-align:middle !important">Documento Auxiliar da Nota Fiscal Eletrônica</td>
+</tr>
+<tr>
+	<td style="vertical-align:middle !important" rowspan='3' colspan='1' >{{TIPO_EMP}} {{END_EMP}} N. {{NUM_EMP}} - <br> 
+        Bairro {{BAI_EMP}}, {{CID_EMP}}, {{UF_EMP}} <br>
+Fone: {{TEM_EMP}}, CEP: {{CEP_EMP}}</td>
+	<td style="vertical-align:middle !important">0 - ENTRADA <font size="4"><b>{{ATUALLIVFIS}}</b></font><br>
+1 - SAÍDA </td>
+	<td style="vertical-align:middle !important" rowspan='3' colspan='1' >Consulta de autenticidade no portal nacional da NF-e www.nfe.fazenda.gov.br/portal ou no site da Sefaz Autorizadora</td>
+</tr>
+<tr>
+	<td style="vertical-align:middle !important"><font size="3"><b>N. {{NUMNOTA}} <br>
+SÉRIE {{SERIENOTA}}</b></font></td>
+</tr>
+
+</table>
+
+            <table class="table">          
+        <tr>
+            <td style="vertical-align:middle !important" rowspan='1' colspan='2' >NATUREZA DA OPERAÇÃO <br> {{DESCRCFO}}</td>
+            <td style="vertical-align:middle !important">PROTOCOLO DE AUTORIZAÇÃO DE USO <br> {{NUMPROTOC}}</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:middle !important">INSCRIÇÃO ESTADUAL <br> {{INSCESTAD}}</td>
+            <td >INSC. ESTADUAL DO SUBST. TRIBUTÁRIO <br></td>
+            <td style="vertical-align:middle !important">CNPJ <br> {{CGC_EMP}}</td>
+        </tr>
+        </table>
+  
+      <table class="table"> DESTINATÁRIO/REMETENTE 
+<tr>
+	<td style="vertical-align:middle !important" rowspan='1' colspan='3' >NOME/RAZÃO SOCIAL<br> {{CLIENTE}}</td>
+	<td style="vertical-align:middle !important">CNPJ/CPF<br> {{CGC_CPF}}</td>
+	<td style="vertical-align:middle !important">DATA DA EMISSÃO<br> {{DTNEG}}</td>
+</tr>
+<tr>
+	<td style="vertical-align:middle !important" rowspan='1' colspan='2' >ENDEREÇO<br> {{TIPO_PAR}} {{ENDERECO}} N. {{NRO}}, COMP: {{COMP_PAR}}</td>
+	<td style="vertical-align:middle !important">BAIRRO/DISTRITO<br> {{BAIRRO}}</td>
+	<td style="vertical-align:middle !important">CEP<br> {{CEP}}</td>
+	<td style="vertical-align:middle !important">DATA DA ENTRADA/SAÍDA<br> {{DTENTSAI}}</td>
+</tr>
+<tr>
+	<td style="vertical-align:middle !important">MUNICÍPIO<br> {{CIDADE}}</td>
+	<td style="vertical-align:middle !important">FONE/FAX<br> {{TELEFONE}}</td>
+	<td style="vertical-align:middle !important">UF<br> {{UF}}</td>
+	<td style="vertical-align:middle !important">INSCRIÇÃO ESTADUAL<br>{{INSCESTADNAUF}}</td>
+	<td style="vertical-align:middle !important">HORA DA SAÍDA<br>{{HORASAIDA}}</td>
+</tr>
+
+</table>
+            <table class="table"> FATURA/DUPLICATA
+        <tr>
+            <td style="vertical-align:middle !important">{{VENDA}}</td>
+        </tr>
+        {{/each}}        
+        </table>
+  
+      <table class="table"> CÁLCULO DE IMPOSTO
+{{#each imp}}
+<tr>
+	<td style="vertical-align:middle !important">BASE DE CÁLCULO DO ICMS<br> {{BASEICMS}}</td>
+	<td style="vertical-align:middle !important">VALOR DO ICMS<br> {{VLRICMS}}</td>
+	<td style="vertical-align:middle !important">BASE DE CÁLCULO DO ICMS ST <br> {{BASESUBSTIT}}<br></td>
+	<td style="vertical-align:middle !important">VALOR DO ICMS ST<br>{{VLRSUBST}}</td>
+	<td style="vertical-align:middle !important" rowspan='1' colspan='2' >VALOR TOTAL DOS PRODUTOS<br> {{VLRTOT}}</td>
+</tr>
+<tr>
+	<td style="vertical-align:middle !important">VALOR DO FRETE<br> {{VLRFRETE}}</td>
+	<td style="vertical-align:middle !important">VALOR DO SEGURO<br> {{VLRSEG}}</td>
+	<td style="vertical-align:middle !important">DESCONTO<br> {{VLRDESC}}</td>
+	<td>OUTRAS DESPESAS <br>{{OUTRASDESP}}</td>
+	<td style="vertical-align:middle !important">VALOR DO IPI<br> {{VLRIPI}}</td>
+	<td style="vertical-align:middle !important">VALOR TOTAL DA NOTA<br> <b>{{VLRNOTA}}</b></td>
+</tr>
+{{/each}}
+</table>
+  
+<table class="table"> TRANSPORTADOR/VOLUMES TRANSPORTADOS
+{{#each cont}}
+<tr>
+	<td width="450px" style="vertical-align:middle !important">RAZÃO SOCIAL <br> {{TRANSRAZAOSOCIAL}}</td>
+	<td style="vertical-align:middle !important">FRETE POR CONTA <br> {{CIF_FOB}}</td>
+	<td style="vertical-align:middle !important">CÓDIGO ANTT<br> {{TRANSANTT}}</td>
+	<td style="vertical-align:middle !important">PLACA DO VEÍCULO<br>{{TRANSPLACA}}</td>
+	<td style="vertical-align:middle !important">UF<br>{{TRANSUFV}} </td>
+	<td style="vertical-align:middle !important">CNPJ/CPF<br> {{TRANSCGC_CPF}}</td>
+</tr>
+<tr>
+	<td style="vertical-align:middle !important">ENDEREÇO<br>{{TRTIPO}} {{TRNOMEND}}, {{TRANSNUMEND}} - {{TRCOMP}}</td>
+	<td style="vertical-align:middle !important" rowspan='1' colspan='3' >MUNICÍPIO<br> {{TRNOMECID}}</td>
+	<td style="vertical-align:middle !important">UF<br> {{TRUF}}</td>
+	<td style="vertical-align:middle !important">INSCRIÇÃO ESTADUAL<br> {{TRANSIDENTINSCESTAD}}</td>
+</tr>
+
+<tr>
+	<td style="vertical-align:middle !important">QUANTIDADE<br> {{QTDVOL}} </td>
+	<td style="vertical-align:middle !important">ESPÉCIE<br> {{VOLUME}} </td>
+	<td style="vertical-align:middle !important">MARCA<br> {{MARCA}} </td>
+	<td style="vertical-align:middle !important">NÚMERO<br> {{NUMERACAOVOLUMES}} </td>
+	<td style="vertical-align:middle !important">PESO BRUTO<br> {{PESOBRUTO}} </td>
+	<td style="vertical-align:middle !important">PESO LÍQUIDO<br> {{PESO}} </td>
+</tr>
+{{/each}}
+</table>
+      <table class="table"> DADOS DOS PRODUTOS/SERVIÇOS
+        <tr>
+            <th width="80px"><font size="1">CÓD. PROD</font></th>
+            <th width="250px"><font size="1">DESCRIÇÃO</font></th>
+            <th width="77px"><font size="1">NCM/SH</font></th>
+            <th width="77px"><font size="1">CST</font></th>
+            <th width="77px"><font size="1">CFOP</font></th>
+            <th width="77px"><font size="1">UN.</font></th>
+            <th width="77px"><font size="1">QUANT.</font></th>
+            <th width="70px"><font size="1">V. UNIT</font></th>
+            <th width="70px"><font size="1">V. DESC</font></th>
+            <th width="70px"><font size="1">% DESC</font></th>
+            <th width="77px"><font size="1">V. TOTAL</font></th>
+            <th width="77px"><font size="1">BC ICMS</font></th>
+            <th width="70px"><font size="1">V. ICMS</font></th>
+            <th width="70px"><font size="1">V. IPI</font></th>
+            <th width="60px"><font size="1">ICMS</font></th>
+            <th width="60px"><font size="1">IPI</font></th>
+
+        </tr>
+        {{#each geral}}
+        <tr>
+            <td style="vertical-align:middle !important"><font size="1">{{CODPROD}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{DESCRPROD}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{CODFISIPI}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{origprod}} {{CODTRIB}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{CODCFO}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{CODVOL}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{QTDNEG}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{VLRUNIT}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{VLRDESC}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{PERCDESC}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{VLRTOT}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{BASEICMS}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{VLRICMS}}</font></td>
+           <td style="vertical-align:middle !important"><font size="1">{{VLRIPI}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{ALIQICMS}}</font></td>
+            <td style="vertical-align:middle !important"><font size="1">{{ALIQIPI}}</font></td>
+        </tr>
+        {{/each}}
+        </table>
+        <br><br><br><br><br>
+
+    <table> CÁLCULO DO ISSQN
+        {{#each rdp}}
+<tr>
+	<td>INSCRIÇÃO MUNICIPAL <br> </td>
+	<td>VALOR TOTAL DOS SERVIÇOS <br> {{RDPVLRTOTSERV}}</td>
+	<td>BASE DE CÁLCULO DE ISSQN <br> {{RDBASEISS}}</td>
+	<td>VALOR DO ISSQN <br> {{RDVLRISS}}</td>
+</tr>
+</table>
+
+<table> DADOS ADICIONAIS
+<tr>
+	<td>INFORMAÇÕES COMPLEMENTARES <br> {{OBSERVACAO}}</td>
+	<td>RESERVADO AO FISCO <br> </td>
+</tr>
+</table>
+{{/each}}
+  </body>
+       
+
+  
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script type="text/javascript" language="javascript" src="../../js/jquery-3.5.1.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.21/af-2.3.5/b-1.6.3/b-colvis-1.6.3/b-flash-1.6.3/b-html5-1.6.3/b-print-1.6.3/cr-1.5.2/fc-3.3.1/fh-3.1.7/kt-2.5.2/r-2.2.5/rg-1.1.2/rr-1.2.7/sc-2.0.2/sp-1.1.1/sl-1.3.1/datatables.min.js"></script>
+
+
+<script>
+
+  var tablevlr =  $('#table').DataTable({
+        //Agrupa os resultados
+        // rowGroup:
+        // {
+        // dataSrc: 'group'
+        // },
+        //permite a seleção de itens da tabela precionando o ctr mais a linha desejada
+        select: false,
+        //Habilita ou Desabilita a paginação da pagina
+        paging: true,
+        //Habilita a rolagem da tabela e tipo o tamanho da tela para rolagem pode colocar entre 100 a 400 que fica ok
+        //Use esse ou o Paging para listar os itens
+         scrollY: 330,
+        "scrollCollapse": true,
+        "scrollX": true,
+        //desabilita a pesquisa diretamente na pagina
+        searching: true,
+        //habilita ou desabilita a ordenação das informações
+        ordering:  true,
+
+
+
+
+        //aqui estou traduzindo alguns campos da planilha para portugues
+        language:{
+    "sEmptyTable": "Nenhum registro encontrado",
+    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+    "sInfoPostFix": "",
+    "sInfoThousands": ".",
+    "sLengthMenu": "_MENU_ resultados por página",
+    "sLoadingRecords": "Carregando...",
+    "sProcessing": "Processando...",
+    "sZeroRecords": "Nenhum registro encontrado",
+    "sSearch": "Pesquisar",
+    "oPaginate": {
+        "sNext": "Próximo",
+        "sPrevious": "Anterior",
+        "sFirst": "Primeiro",
+        "sLast": "Último"
+    },
+    "oAria": {
+        "sSortAscending": ": Ordenar colunas de forma ascendente",
+        "sSortDescending": ": Ordenar colunas de forma descendente"
+    },
+    "select": {
+        "rows": {
+            "_": "Selecionado %d linhas",
+            "0": "Nenhuma linha selecionada",
+            "1": "Selecionado 1 linha"
+        }
+    },
+    "buttons": {
+        "copy": "Copiar para a área de transferência",
+        "copyTitle": "Cópia bem sucedida",
+        "copySuccess": {
+            "1": "Uma linha copiada com sucesso",
+            "_": "%d linhas copiadas com sucesso"
+        }
+    }
+},
+        //Adicionando botões
+        buttons:[
+        //comando para gerar os botões de selecionar todos e descelecionar
+            // 'selectAll',
+            // 'selectNone',
+        //Botões para seleção das celulas
+            // 'selectRows',
+            // 'selectColumns',
+            // 'selectCells',
+
+        {
+            //Gera uma collection para agrupar todos os botões em um unico local
+                extend: 'collection',
+                text: '<span class="material-icons">archive</span>',
+                //define os botões que serão agrupados
+                buttons: [
+
+            
+            
+            
+            //gera o pdf da tabela para impressão
+            {
+                extend: 'pdf',
+                text : 'PDF',
+                title: 'Resultado da consulta',
+                orientation:'landscape',               
+                key:{
+                    key: 'p',
+                    altkey: true
+                }
+            },           
+                ],
+                dropup: true
+            },
+            //botão para imprimir a tabela toda, formato abaixo e para traduzir os botões
+            {
+                //informa que vamos extender de um botão conhecido
+                extend: 'print',
+                //inseri atributos do botão https://datatables.net/reference/option/buttons.buttons.attr
+                attr:
+                {
+                    id: 'print',
+                    role : 'tooltip'
+                },
+                //Altero o texto e formato a primeira letra para maiuscula
+                text: '<span class="material-icons">print</span>',
+                //Modifico o titulo da impressão
+                title: 'Resultado da consulta',
+                //opção para imprimir somente o que estiver visivel na planilha conciliado com o parametro colvis
+                exportOptions: {
+                columns: ':visible'
+                },
+                key: {
+                    key: 'I',
+                    altkey: true
+                }
+            },
+            
+            //define a exibição das colunas https://datatables.net/reference/button/columnToggle melhor usar o colvis
+            // {
+            // extend: 'columnToggle',
+            // columns: 1
+            // }
+        ],
+        //resosividade da tela (+)
+        responsive: false,
+        columnDefs: [ {
+            targets: 0,
+            visible: false
+        } ],
+        //complemento da configuração dos botões
+        dom: 'Bfrtip',
+
+    // fim da table
+    });
+
+    //fim da função
+
+
+    function voltar() {
+	window.setTimeout(function(){history.go(-1)},1000);
+}
+
+
+
+</script>
+</body>
+</html>

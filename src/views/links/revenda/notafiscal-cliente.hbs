@@ -15,11 +15,19 @@
     
   </head>
   <body>
-       <center><font size='6'>Notas Fiscais</font></center>
+       <center><font size='6'>Notas Fiscais Clientes</font></center>       
 
   <div class="container">
+      <div><form action="" method="get" id="frm_" name="frm_" enctype="multipart/form-data"></form>
+                          <button id="visualizarDados"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+  <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+  <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+</svg></button>
+                          <input hidden id="notafiscal" name="nota fiscal">
+                          </form></div>
       <div class="row">
-          <div class="col-sm">
+          <div class="col-sm">             
+               
 
                 <table id="table" class="table table-striped table-bordered" style="width:100%">
                 <thead>
@@ -27,26 +35,28 @@
                         <th data-field="cod" data-editable="true"></th>
                         <th data-field="cod" data-editable="true">Nro. Nota</th>
                         <th data-field="usuario" data-editable="true">Data</th>
-                        <th data-field="usuario" data-editable="true">Cliente</th>
-                        <th data-field="login" data-editable="true">Vendedor</th>  
-                        <th data-field="login" data-editable="true">Valor</th>                       
+                        <th data-field="login" data-editable="true">Vendedor</th>                         
+                        <th data-field="login" data-editable="true">Valor</th>
+                        <th data-field="cod" data-editable="true">Nro. Único</th>  
+                        <th data-field="login" data-editable="true">Cliente</th>               
                                                                    
                     </tr>
                 </thead>
                 <tbody>
                  {{#each lista}}
                     <tr>
-                        <td></td> 
+                        <td></td>                         
                       <td>{{NUMNOTA}}</td>                      
                       <td>{{DTNEG}}</td> 
-                      <td>{{CLIENTE}}</td> 
                       <td>{{VENDEDOR}}</td> 
-                      <td>{{VLRNOTA}}</td>                     
+                      <td>{{VLRNOTA}}</td>
+                      <td>{{NUNOTA}}</td> 
+                      <td>{{CLIENTE}}</td>  
                        
                     </tr>
                 {{/each}}
                 </tbody>
-            </table>
+            </table>                          
 
           </div>
 
@@ -74,10 +84,10 @@
         //permite a seleção de itens da tabela precionando o ctr mais a linha desejada
         select: true,
         //Habilita ou Desabilita a paginação da pagina
-        paging: true,
+        paging: false,
         //Habilita a rolagem da tabela e tipo o tamanho da tela para rolagem pode colocar entre 100 a 400 que fica ok
         //Use esse ou o Paging para listar os itens
-         scrollY: 330,
+         scrollY: 370,
         "scrollCollapse": true,
         "scrollX": true,
         //desabilita a pesquisa diretamente na pagina
@@ -136,106 +146,9 @@
             // 'selectRows',
             // 'selectColumns',
             // 'selectCells',
-
-        {
-            //Gera uma collection para agrupar todos os botões em um unico local
-                extend: 'collection',
-                text: '<span class="material-icons">archive</span>',
-                //define os botões que serão agrupados
-                buttons: [
-
+        
             
-            //gera o arquivo no formato xlsx
-            {
-                extend: 'excel',
-                text : 'Excel',
-                title: 'Resultado da consulta',
-                key:{
-                    key: 'e',
-                    altkey: true
-                }
-            },
-            {
-                 //gera um arquivo csv
-                extend: 'csv',
-                //inseri atributos do botão https://datatables.net/reference/option/buttons.buttons.attr
-                attr:
-                {
-                    id: 'csv',
-                    role : 'tooltip'
-                },
-                //Altero o texto e formato a primeira letra para maiuscula
-                text: 'CSV',
-                //Modifico o titulo da impressão
-                title: 'Resultado da consulta',
-                //opção para imprimir somente o que estiver visivel na planilha conciliado com o parametro colvis
-                exportOptions: {
-                columns: ':visible'
-                },
-                key: {
-                    key: 'I',
-                    altkey: true
-                }
-            },
-            //gera o pdf da tabela para impressão
-            {
-                extend: 'pdf',
-                text : 'PDF',
-                title: 'Resultado da consulta',
-                orientation:'landscape',               
-                key:{
-                    key: 'p',
-                    altkey: true
-                }
-            },
-            //Exporta a cosnulta em formato Json
-            {
-                text: 'JSON',
-                action: function ( e, dt, button, config ) {
-                    var data = dt.buttons.exportData();
-
-                    $.fn.dataTable.fileSave(
-                        new Blob( [ JSON.stringify( data ) ] ),
-                        'Export.json'
-                    );
-                }
-            }
-                ],
-                dropup: true
-            },
-            //botão para imprimir a tabela toda, formato abaixo e para traduzir os botões
-            {
-                //informa que vamos extender de um botão conhecido
-                extend: 'print',
-                //inseri atributos do botão https://datatables.net/reference/option/buttons.buttons.attr
-                attr:
-                {
-                    id: 'print',
-                    role : 'tooltip'
-                },
-                //Altero o texto e formato a primeira letra para maiuscula
-                text: '<span class="material-icons">print</span>',
-                //Modifico o titulo da impressão
-                title: 'Resultado da consulta',
-                //opção para imprimir somente o que estiver visivel na planilha conciliado com o parametro colvis
-                exportOptions: {
-                columns: ':visible'
-                },
-                key: {
-                    key: 'I',
-                    altkey: true
-                }
-            },
-            //usado para selecionar quais campos serão exibidos ou não na tabela
-            {
-            extend: 'colvis',
-            text: '<span class="material-icons">view_module</span>',
-            title: 'Resultado da consulta',
-                key:{
-                    //key: 'c',
-                    altkey: true
-                }
-            }
+            
             //define a exibição das colunas https://datatables.net/reference/button/columnToggle melhor usar o colvis
             // {
             // extend: 'columnToggle',
@@ -255,6 +168,68 @@
     });
 
     //fim da função
+
+
+
+
+    //selecionar item para imprimir nota 
+    var tabela = document.getElementById("table");
+    var linhas = tabela.getElementsByTagName("tr");
+
+    
+
+    for(var i = 0; i < linhas.length; i++){
+        var linha = linhas[i];
+    linha.addEventListener("click", function(){
+        //Adicionar ao atual
+            selLinha(this, false); //Selecione apenas um
+                    //selLinha(this, true); //Selecione quantos quiser
+        });
+    }
+
+    /**
+    Caso passe true, você pode selecionar multiplas linhas.
+    Caso passe false, você só pode selecionar uma linha por vez.
+    **/
+    function selLinha(linha, multiplos){
+    if(!multiplos){
+        var linhas = linha.parentElement.getElementsByTagName("tr");
+            for(var i = 0; i < linhas.length; i++){
+            var linha_ = linhas[i];
+            linha_.classList.remove("selecionado");    
+            }
+    }
+    linha.classList.toggle("selecionado");
+    }
+
+    /**
+    Exemplo de como capturar os dados
+    **/
+    var btnVisualizar = document.getElementById("visualizarDados");
+
+    btnVisualizar.addEventListener("click", function(){
+        var selecionados = tabela.getElementsByClassName("selecionado");
+    //Verificar se eestá selecionado
+    if(selecionados.length < 1){
+        alert("Selecione pelo menos uma linha");
+        return false;
+    }
+    
+    var dados = "";
+    
+    for(var i = 0; i < selecionados.length; i++){
+        var selecionado = selecionados[i];
+        selecionado = selecionado.getElementsByTagName("td");
+        
+
+        var rota = "nfc/"
+        var rota2 = document.getElementById('notafiscal').value= selecionado[4].innerHTML
+
+                document.frm_.action = `${rota} ${rota2}`;
+                document.frm_.submit();
+        
+    }
+    });
 
 
 
